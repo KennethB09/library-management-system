@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    box-sizing: border-box;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-color: #f1f1f1;
+    --bg-white: #ffffff;
+    --blue: #4161ff;
+    --gray: #4d4d4d;
+    --orange: #ffc000;
+    --red: #FC4949;
+    --icon-clr: invert(27%) sepia(8%) saturate(17%) hue-rotate(323deg) brightness(90%) contrast(79%);
+    --icon-blue: invert(30%) sepia(52%) saturate(3573%) hue-rotate(224deg) brightness(103%) contrast(101%);
+    --icon-red: invert(28%) sepia(55%) saturate(1293%) hue-rotate(324deg) brightness(135%) contrast(102%);
+    --modal-bg: rgba(0, 0, 0, 0.507);
+
+    --fontSize-sm: 16px;
+    --fontSize-md: 20px;
+    --fontSize-lg: 24px;
+    --fontSize-xl: 32px;
+    --fontSize-xxl: 96px;
+
+    --fontWRegular: 400;
+    --fontWSemi: 600;
+    --fontWBold: 700;
+}
+
+body {
+    font-family: "Roboto", sans-serif;
+    background-color: var(--bg-color);
+}
+
+.icon-clr {
+    filter: var(--icon-clr);
+}
+
+.cta-btn-primary {
+    cursor: pointer;
+    background-color: var(--blue);
+    border: 1px solid var(--blue);
+    padding: .5rem 1rem;
+    border-radius: 10px;
+    color: var(--bg-white);
+    font-size: var(--fontSize-sm);
+    font-weight: var(--fontWSemi);
+    text-transform: capitalize;
+}
+
+.cta-btn-secondary {
+    cursor: pointer;
+    background-color: var(--red);
+    border: 1px solid var(--red);
+    padding: .5rem 1rem;
+    border-radius: 10px;
+    color: var(--bg-white);
+    font-size: var(--fontSize-sm);
+    font-weight: var(--fontWSemi);
+    text-transform: capitalize;
+}
+
+.ghost-btn {
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--blue);
+    border: 1px solid var(--blue);
+    font-size: var(--fontSize-sm);
+    font-weight: var(--fontWRegular);
+    border-radius: 10px;
+    padding: .5rem 1.5rem;
+    text-transform: capitalize;
+}
+
+.input-style {
+    border: none;
+    border-radius: 10px;
+    padding: .5rem;
+    color: var(--gray);
+}
+
+.input-style:focus {
+    outline-color: var(--blue);
+}
+
+.select-style {
+    border: none;
+    padding: .5rem;
+    border-radius: 10px;
+    color: var(--gray)
+}
+
+.select-style:focus {
+    outline-color: var(--blue);
+}
+
+.search-main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: .5rem;
+    
+    .search-input-container {
+        display: flex;
+        width: 100%;
+        gap: 1rem;
+
+        .form-control {
+            width: 350px;
+        }
+    }
+
+    .search-no-result {
+        color: var(--gray);
+        font-size: var(--fontSize-sm);
+        font-weight: var(--fontWRegular);
+    }
+}

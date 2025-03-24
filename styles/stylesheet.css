@@ -1,0 +1,352 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    box-sizing: border-box;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", serif;
+}
+
+:root {
+    --bg-color: #f1f1f1;
+    --bg-white: #ffffff;
+    --blue: #4161ff;
+    --gray: #4d4d4d;
+    --orange: #ffc000;
+    --red: #FC4949;
+
+    --fontSize-sm: 16px;
+    --fontSize-md: 20px;
+    --fontSize-lg: 24px;
+    --fontSize-xl: 32px;
+    --fontSize-xxl: 96px;
+
+    --fontWRegular: 400;
+    --fontWSemi: 600;
+    --fontWBold: 700;
+
+}
+
+.sign-up-main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: var(--bg-color);
+
+    .role {
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+
+        font-weight: var(--fontWSemi);
+        color: var(--blue);
+    }
+
+    .sign-up-form-container {
+        max-width: 300px;
+        min-width: 300px;
+        padding: 30px;
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--blue);
+            font-weight: var(--fontWBold);
+            font-size: var(--fontSize-xl);
+        }
+
+        p {
+            color: var(--gray);
+            font-weight: var(--fontWRegular);
+            font-size: var(--fontSize-sm);
+        }
+
+        a {
+            color: var(--blue);
+            font-weight: var(--fontWSemi);
+            font-size: var(--fontSize-sm);
+            text-decoration: underline;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: .5rem;
+
+            .sign-up-form-course-section-container {
+                display: flex;
+                gap: 1rem;
+
+                .section-container, .course-container {
+                    width: 50%;
+                    display: flex;
+                    flex-direction: column;
+                    gap: .3rem;
+
+                    label {
+                        color: var(--gray);
+                        font-weight: var(--fontWSemi);
+                        font-size: var(--fontSize-sm);
+                    }
+
+                    select {
+                        height: 30px;
+                        border-radius: 10px;
+                        padding-left: 5px;
+                        padding-right: 5px;
+                        color: var(--gray);
+                    }
+
+                    select:focus {
+                        outline-color: var(--blue);
+                    }
+
+                    input {
+                        border: 1px solid var(--gray);
+                        height: 30px;
+                        border-radius: 10px;
+                        padding-left: 5px;
+                        padding-right: 5px;
+                        color: var(--gray);
+                    }
+
+                    input:focus {
+                        outline-color: var(--blue);
+                    }
+                }
+            }
+
+            .input-container {
+                display: flex;
+                flex-direction: column;
+                gap: .3rem;
+
+                label {
+                    color: var(--gray);
+                    font-weight: var(--fontWSemi);
+                    font-size: var(--fontSize-sm);
+                }
+
+                input {
+                    border: 1px solid var(--gray);
+                    height: 30px;
+                    border-radius: 10px;
+                    padding-left: 5px;
+                    padding-right: 5px;
+                    color: var(--gray);
+                }
+                
+                input:focus {
+                    outline-color: var(--blue);
+                }
+            }
+
+            button {
+                background-color: var(--blue);
+                color: var(--bg-white);
+                border: none;
+                border-radius: 10px;
+                margin: 1rem .3rem;
+                padding: 10px 20px;
+                cursor: pointer;
+                font-weight: var(--fontWSemi);
+                font-size: var(--fontSize-sm);
+                transition: background-color 0.3s ease;
+            }
+        }
+    }
+}
+
+.login-main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: var(--bg-color);
+
+    .role {
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+
+        font-weight: var(--fontWSemi);
+        color: var(--blue);
+    }
+
+    .login-form-container {
+        max-width: 350px;
+        min-width: 350px;
+        padding: 30px;
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--blue);
+            font-weight: var(--fontWBold);
+            font-size: var(--fontSize-xl);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: .5rem;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+    
+            label {
+                color: var(--gray);
+                font-weight: var(--fontWSemi);
+                font-size: var(--fontSize-sm);
+            }
+    
+            input {
+                border: 1px solid var(--gray);
+                height: 30px;
+                border-radius: 10px;
+                padding-left: 5px;
+                padding-right: 5px;
+                color: var(--gray);
+            }
+    
+            input:focus {
+                outline-color: var(--blue);
+            }
+        }
+        
+        button {
+            background-color: var(--blue);
+            color: var(--bg-white);
+            border: none;
+            border-radius: 10px;
+            width: 100%;
+            margin: 1rem 0;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: var(--fontWSemi);
+            font-size: var(--fontSize-sm);
+            transition: background-color 0.3s ease;
+        }
+        
+        a {
+            color: var(--blue);
+            font-weight: var(--fontWSemi);
+            font-size: var(--fontSize-sm);
+            text-decoration: underline;
+        }
+    
+        p {
+            color: var(--gray);
+            font-weight: var(--fontWRegular);
+            font-size: var(--fontSize-sm);
+        }
+    }
+
+}
+
+.admin-main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: var(--bg-color);
+
+    .role
+     {
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+
+        font-weight: var(--fontWSemi);
+        color: var(--blue);
+    }
+
+    .admin-form-container {
+        max-width: 350px;
+        min-width: 350px;
+        padding: 30px;
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--blue);
+            font-weight: var(--fontWBold);
+            font-size: var(--fontSize-xl);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+
+            .input-container {
+                display: flex;
+                flex-direction: column;
+                gap: .3rem;
+
+                label {
+                    color: var(--gray);
+                    font-weight: var(--fontWSemi);
+                    font-size: var(--fontSize-sm);
+                }
+
+                input {
+                    border: 1px solid var(--gray);
+                    height: 30px;
+                    border-radius: 10px;
+                    padding-left: 5px;
+                    padding-right: 5px;
+                    color: var(--gray);
+                }
+
+                input:focus {
+                    outline-color: var(--blue);
+                }
+
+            }
+
+            .error {
+                color: var(--red);
+                font-size: var(--fontSize-sm);
+                font-weight: var(--fontWSemi);
+            }
+
+            button {
+                background-color: var(--blue);
+                color: var(--bg-white);
+                border: none;
+                border-radius: 10px;
+                width: 100%;
+                margin: 1rem 0;
+                padding: 10px 20px;
+                cursor: pointer;
+                font-weight: var(--fontWSemi);
+                font-size: var(--fontSize-sm);
+                transition: background-color 0.3s ease;
+            }
+        }
+    }
+}
+

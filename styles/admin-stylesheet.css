@@ -1,0 +1,244 @@
+.admin-dashboard {
+    background-color: var(--bg-color);
+
+    .admin-nav {
+        display: flex;
+        width: 100%;
+        height: 7rem;
+        background-color: var(--bg-white);
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 3rem;
+
+        .admin-account-btn {
+            display: flex;
+            flex-direction: column;
+            background-color: transparent;
+            border: none;
+            font-size: var(--fontSize-sm);
+            color: var(--gray);
+
+            .admin-account-btn-span {
+                font-weight: var(--fontWSemi);
+                font-size: var(--fontSize-md);
+                text-align: start;
+                margin-bottom: .5rem;
+            }
+        }
+
+        .admin-nav-tab-container {
+
+            .tab-container {
+                display: flex;
+                justify-content: space-between;
+                background-color: var(--blue);
+                justify-content: space-between;
+                width: 30rem;
+                padding: 1.5rem 2rem;
+                border-radius: 20px;
+
+                button {
+                    cursor: pointer;
+                    border: none;
+                    background-color: transparent;
+                    color: var(--bg-white);
+                    transition: color 0.3s ease;
+                    font-size: var(--fontSize-sm);
+                    font-weight: var(--fontWSemi);
+                }
+
+                button.active {
+                    border-bottom: solid var(--bg-white) 2px;
+                    padding-bottom: .3rem;
+                }
+            }
+        }
+    }
+
+    .admin-info-main-container {
+        display: none;
+        position: absolute;
+    }
+
+    .admin-info-main-container[data-visible="true"] {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: var(--modal-bg);
+        display: flex;
+        position: fixed;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        .admin-info-container {
+            background-color: var(--bg-white);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            width: 30rem;
+
+            .admin-info-header {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+
+                h1 {
+                    font-weight: var(--fontWBold);
+                    font-size: var(--fontSize-md);
+                    color: var(--blue);
+                    text-transform: capitalize;
+                }
+
+                button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: transparent;
+                    border: none;
+                    cursor: pointer;
+
+                    img {
+                        width: 20px;
+                        height: 20px;
+                        filter: var(--icon-clr);
+                    }
+                }
+            }
+        }
+
+        .admin-info-content {
+            display: flex;
+            justify-content: space-between;
+
+            .admin-first-name-container {
+                display: flex;
+                flex-direction: column;
+
+                .admin-first-name-label {
+                    font-weight: var(--fontWSemi);
+                    font-size: var(--fontSize-sm);
+                    color: var(--gray);
+                    text-transform: capitalize;
+                }
+
+                .admin-first-name {
+                    font-weight: var(--fontWSemi);
+                    font-size: var(--fontSize-sm);
+                    color: var(--gray);
+                }
+            }
+
+            .admin-last-name-container {
+                display: flex;
+                flex-direction: column;
+
+                .admin-last-name-label {
+                    font-weight: var(--fontWSemi);
+                    font-size: var(--fontSize-sm);
+                    color: var(--gray);
+                    text-transform: capitalize;
+                }
+
+                .admin-last-name {
+                    font-weight: var(--fontWSemi);
+                    font-size: var(--fontSize-sm);
+                    color: var(--gray);
+                }
+
+            }
+        }
+
+        .admin-info-edit-btn-container {
+            display: flex;
+            justify-content: start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+
+            button {
+                cursor: pointer;
+                background-color: transparent;
+                border: none;
+
+                img {
+                    width: 20px;
+                    height: 20px;
+                    filter: var(--icon-blue);
+                }
+            }
+        }
+
+        .admin-info-edit-form-container {
+            display: none;
+        }
+
+        .admin-info-new-admin-form-container {
+            display: none;
+        }
+    }
+
+    .admin-logout-modal-container {
+        display: none;
+        position: absolute;
+    }
+
+    .admin-logout-modal-container[data-visible = "true"] {
+        display: block;
+        position: absolute;
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: var(--modal-bg);
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        .admin-logout-modal {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-white);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            width: 30rem;
+            gap: 1rem;
+
+            .admin-logout-modal-header {
+                display: flex;
+                justify-content: space-between;
+
+                h1 {
+                    font-weight: var(--fontWBold);
+                    font-size: var(--fontSize-md);
+                    color: var(--blue);
+                    text-transform: capitalize;
+                }
+
+                button {
+                    cursor: pointer;
+                    background-color: transparent;
+                    border: none;
+
+                    img {
+                        width: 20px;
+                        height: 20px;
+                        filter: var(--icon-clr);
+                    }
+                }
+            }
+
+            p {
+                font-size: var(--fontSize-sm);
+                color: var(--gray);
+            }
+
+            .admin-logout-modal-btn-container {
+                display: flex;
+                gap: .5rem;
+                justify-content: end;
+            }
+        }
+    }
+}
