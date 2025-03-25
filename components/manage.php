@@ -124,7 +124,7 @@ if (isset($_GET['search'])) {
                                 <?php } ?>
                             <?php } ?>
                         <?php } else { ?>
-                            <?php echo '<tr><td>0 result</td></tr>'; ?>
+                            <?php echo '<tr class="table-row-no-result"><td colspan="4">No Books in Database</td></tr>'; ?>
                         <?php } ?>
 
                     </tbody>

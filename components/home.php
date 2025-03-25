@@ -102,7 +102,7 @@ $requestCount = $requested['total'];
                                 }
                             }
                         } else {
-                            echo '<tr><td>0 result</td></tr>';
+                            echo '<tr class="table-row-no-result"><td colspan="4">No Books Available</td></tr>';
                         }
                         ?>
                     </tbody>

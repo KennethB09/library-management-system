@@ -109,7 +109,7 @@ if (isset($_GET['search'])) {
                                 <?php } ?>
                             <?php } ?>
                         <?php } else { ?>
-                            <?php echo '<tr class="table-row-no-result"><td>No borrow</td><td>--</td><td>--</td><td>--</td><td>--</td><td class="table-row-returned"><button class="cta-btn-primary">Returned</button></tr>'; ?>
+                            <?php echo '<tr class="table-row-no-result"><td colspan="6">No Books Borrowed</td></tr>'; ?>
                         <?php } ?>
 
                     </tbody>

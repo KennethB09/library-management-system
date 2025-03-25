@@ -58,7 +58,7 @@ $section = $studentRow["section"];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../styles/request-book.css">
     <link rel="stylesheet" type="text/css" href="../styles/main.css">
-    <title>Document</title>
+    <title>Student | Request Book</title>
 </head>
 
 <body>
@@ -186,7 +186,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         header("Location: search-book.php");
         exit();
 
-        echo "Request submitted successfully";
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
     }

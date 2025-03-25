@@ -107,7 +107,7 @@ if (isset($_GET['search'])) {
                                 <?php } ?>
                             <?php } ?>
                         <?php } else { ?>
-                            <?php echo '<tr class="table-row-no-result"><td>No request</td><td>--</td><td>--</td><td>--</td><td>--</td><td class="table-row-approve"><button class="cta-btn-primary">Approve</button></td><td class="table-row-decline"><button class="cta-btn-secondary">Decline</button></td></tr>'; ?>
+                            <?php echo '<tr class="table-row-no-result"><td colspan="7">No Students Book Request Available</td></tr>'; ?>
                         <?php } ?>
 
                     </tbody>
