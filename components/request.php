@@ -90,14 +90,14 @@ if (isset($_GET['search'])) {
                                     $bookTitleStmt->bind_param("s", $row['bookRef']);
                                     $bookTitleStmt->execute();
                                     $title = $bookTitleStmt->get_result()->fetch_assoc();
-
+                                    $requestedOn = date("Y-m-d", strtotime($row['requestOn']));
                                     ?>
                                     <tr class="table-row">
                                         <td><?= htmlspecialchars($row['id']) ?></td>
                                         <td><?= htmlspecialchars($row['requesterId']) ?></td>
                                         <td><?= htmlspecialchars($title['title']) ?></td>
                                         <td><?= htmlspecialchars($row['requestOn']) ?></td>
-                                        <td><?= htmlspecialchars($row['dueDate']) ?></td>
+                                        <td><?= htmlspecialchars($requestedOn) ?></td>
                                         <td class="table-row-approve"><button class="cta-btn-primary" onclick="onApprove(event, '<?= $row['id'] ?>', '<?= $title['id'] ?>', '<?= htmlspecialchars($row['dueDate']) ?>', '<?= $row['requesterId'] ?>')">Approve</button></td>
                                         <td class="table-row-decline"><button class="cta-btn-secondary" onclick="onDecline(event, '<?= $row['id'] ?>')">Decline</button></td>
                                     </tr>

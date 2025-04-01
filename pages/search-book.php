@@ -153,7 +153,7 @@ if (isset($_GET['search'])) {
                 </div>
                 <div class="search-book-sidebar-btn-container">
                     <button class="cta-btn-primary search-book-sidebar-btn-request" type="submit" id="requestBtn" disabled>request</button>
-                    <button class="ghost-btn" type="button" disabled>add to wishlist</button>
+                    <button class="ghost-btn search-book-sidebar-btn-wait-list" type="button" onclick="waitList(event, '<?= $_COOKIE['student'] ?>')" id="waitListBtn" disabled>add to wait list</button>
                 </div>
             </form>
         </aside>

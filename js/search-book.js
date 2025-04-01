@@ -6,11 +6,24 @@ const bookType = document.getElementById("bookType");
 const bookGenre = document.getElementById("bookGenre");
 const bookAvailable = document.getElementById("bookAvailable");
 const bookTotal = document.getElementById("bookTotal");
+
 const requestBtn = document.querySelector(".search-book-sidebar-btn-request");
+const waitListBtn = document.querySelector(".search-book-sidebar-btn-wait-list");
+
+let selectedId = "";
 
 function onClickBook(id, title, author, type, genre, description, available, total) {
     
-    requestBtn.disabled = false;
+    selectedId = id
+
+    if (available === "0") {
+        requestBtn.disabled = true;
+        waitListBtn.disabled = false;
+    } else {
+        requestBtn.disabled = false;
+        waitListBtn.disabled = false;
+    }
+
     bookId.value = id;
     bookTitle.innerText = title;
     bookAuthor.innerText = author;
@@ -20,4 +33,22 @@ function onClickBook(id, title, author, type, genre, description, available, tot
     bookAvailable.innerText = available;
     bookTotal.innerText = total;
 
+}
+
+function waitList(event, userId) {
+    event.preventDefault();
+    console.log("working")
+    let formData = new FormData();
+    formData.append("bookId", selectedId);
+    formData.append("userId", userId);
+    fetch("../utility/waitList.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        alert(data);
+        location.reload();
+    })
+    .catch(error => console.error(error));
 }

@@ -27,7 +27,7 @@ $availableStmt->execute();
 $available = $availableStmt->get_result()->fetch_assoc();
 $availableRow = $available['available'];
 
-$studentNum = $_SESSION["studentNumber"];
+$studentNum = $_COOKIE["student"];
 $studentStmt = $conn->prepare("SELECT studentNumber, firstName, lastName, email, course, section FROM users WHERE studentNumber = ?");
 $studentStmt->bind_param("i", $studentNum);
 $studentStmt->execute();

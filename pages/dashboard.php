@@ -4,7 +4,8 @@ checkAuth();
 
 require "../utility/dp-connection.php";
 
-function tableData($row, $borrowedIn, $returnOn) {
+function tableData($row, $borrowedIn, $returnOn)
+{
     echo '<tr>';
     echo '<td>' . $row['title'] . '</td>';
     echo '<td>' . $row['genre'] . '</td>';
@@ -14,7 +15,8 @@ function tableData($row, $borrowedIn, $returnOn) {
     echo '</tr>';
 }
 
-function tableDataR($bookData, $requestedOn) {
+function tableDataR($bookData, $requestedOn)
+{
     echo '<tr>';
     echo '<td>' . $bookData["title"] . '</td>';
     echo '<td>' . $bookData["genre"] . '</td>';
@@ -22,34 +24,47 @@ function tableDataR($bookData, $requestedOn) {
     echo '</tr>';
 }
 
+function waitListData($data, $status) {
+    echo '<tr>';
+    echo '<td>'. $data["title"]. '</td>';
+    echo '<td>'. $data["genre"]. '</td>';
+    echo '<td>'. $status. '</td>';
+    echo '</tr>';
+}
+
 $getUserInfo = $conn->prepare("SELECT studentNumber, firstName, lastName FROM users WHERE studentNumber =?");
-$getUserInfo->bind_param("i", $_SESSION["studentNumber"]);
+$getUserInfo->bind_param("i", $_COOKIE["student"]);
 $getUserInfo->execute();
 $userInfoResult = $getUserInfo->get_result();
 $userInfoRow = $userInfoResult->fetch_assoc();
 
 $getUserBorrowedBooks = $conn->prepare("SELECT bookRef, borrowedOn, dueDate FROM borrowed_books WHERE borrower = ?");
-$getUserBorrowedBooks->bind_param("i", $_SESSION["studentNumber"]);
+$getUserBorrowedBooks->bind_param("i", $_COOKIE["student"]);
 $getUserBorrowedBooks->execute();
 $borrowedBooksResult = $getUserBorrowedBooks->get_result();
 
 $countBorrowedBooks = $conn->prepare("SELECT COUNT(*) as total FROM borrowed_books WHERE borrower = ?");
-$countBorrowedBooks->bind_param("i", $_SESSION["studentNumber"]);
+$countBorrowedBooks->bind_param("i", $_COOKIE["student"]);
 $countBorrowedBooks->execute();
 $countBorrowedBooksResult = $countBorrowedBooks->get_result();
 $countBorrowedBooksRow = $countBorrowedBooksResult->fetch_assoc();
 
 $countRequestedBooks = $conn->prepare("SELECT COUNT(*) as total FROM request_books WHERE requesterId = ?");
-$countRequestedBooks->bind_param("i", $_SESSION["studentNumber"]);
+$countRequestedBooks->bind_param("i", $_COOKIE["student"]);
 $countRequestedBooks->execute();
 $countRequestedBooksResult = $countRequestedBooks->get_result();
 $countRequestedBooksRow = $countRequestedBooksResult->fetch_assoc();
 
 
 $getUserRequestedBooks = $conn->prepare("SELECT bookRef, requestOn FROM request_books WHERE requesterId =?");
-$getUserRequestedBooks->bind_param("i", $_SESSION["studentNumber"]);
+$getUserRequestedBooks->bind_param("i", $_COOKIE["student"]);
 $getUserRequestedBooks->execute();
 $getUserRequestedBooksResult = $getUserRequestedBooks->get_result();
+
+$getUserWaitList = $conn->prepare("SELECT bookRef FROM waitlist WHERE userId =? ");
+$getUserWaitList->bind_param("i", $_COOKIE["student"]);
+$getUserWaitList->execute();
+$getUserWaitListResult = $getUserWaitList->get_result();
 
 ?>
 
@@ -61,6 +76,7 @@ $getUserRequestedBooksResult = $getUserRequestedBooks->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../styles/student-dashboard.css">
     <link rel="stylesheet" type="text/css" href="../styles/main.css">
+    <script defer src="../js/student-dashboard.js"></script>
     <title>Student | Dashboard</title>
 </head>
 
@@ -78,41 +94,6 @@ $getUserRequestedBooksResult = $getUserRequestedBooks->get_result();
     </header>
     <main>
         <div class="section-1-container">
-            <div class="table-container section-1-table-container">
-                <h1>Requested Books</h1>
-                <div class="table section-1-table">
-                    <table>
-                        <thead>
-                            <th>Name</th>
-                            <th>Genre</th>
-                            <th>Requested On</th>
-                        </thead>
-                        <tbody>
-                            <?php
-                            if ($getUserRequestedBooksResult->num_rows > 0) {
-                                while ($borrowData = $getUserRequestedBooksResult->fetch_assoc()) {
-                                    try {
-
-                                        $requestedOn = date("Y-m-d", strtotime($borrowData["requestOn"]));
-
-                                        $getBook = $conn->prepare("SELECT title, genre FROM books WHERE id =?");
-                                        $getBook->bind_param("i", $borrowData["bookRef"]);
-                                        $getBook->execute();
-                                        $bookData = $getBook->get_result()->fetch_assoc();
-
-                                        tableDataR($bookData, $requestedOn);
-                                    } catch (Exception $e) {
-                                        echo "Error: " . $e->getMessage();
-                                    }
-                                }
-                            } else {
-                                echo '<tr><td>0 result</td></tr>';
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
             <div class="section-1-card-container">
                 <div class="section-1-card-borrowed">
                     <h1>Borrowed</h1>
@@ -133,10 +114,52 @@ $getUserRequestedBooksResult = $getUserRequestedBooks->get_result();
                     </div>
                 </div>
             </div>
+            <div class="table-container section-1-table-container">
+                <h1>Wait list</h1>
+                <div class="table section-1-table">
+                    <table>
+                        <thead>
+                            <th>Name</th>
+                            <th>Genre</th>
+                            <th>Status</th>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($getUserWaitListResult->num_rows > 0) {
+                            while ($waitListData = $getUserWaitListResult->fetch_assoc()) {
+                                try {
+                     
+                                    $getCopy = $conn->prepare("SELECT bookRef, status FROM books_copy WHERE id = ?");
+                                    $getCopy->bind_param("i", $waitListData["bookRef"]);
+                                    $getCopy->execute();
+                                    $copyData = $getCopy->get_result()->fetch_assoc();
+         
+                                    $stmt = $conn->prepare("SELECT title, genre FROM books WHERE id = ?");
+                                    $stmt->bind_param("i", $copyData["bookRef"]);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
+                                    $row = $result->fetch_assoc();
+
+                                    waitListData($row, $copyData["status"]);
+                                } catch (Exception $e) {
+                                    echo "Error: " . $e->getMessage();
+                                }
+                            }
+                        } else {
+                            echo '<tr><td>0 result</td></tr>';
+                        }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
         <div class="table-container">
-            <h1>Borrowed Books</h1>
-            <div class="table">
+            <div class="table-title-container">
+                <h1 class="borrow-table-title title-clicked" onclick="switchTable('borrow')">Borrowed Books</h1>
+                <h2 class="request-table-title" onclick="switchTable('request')">Requested Books</h2>
+            </div>
+            <div class="table" data-visible="true" id="borrowTable">
                 <table>
                     <thead>
                         <th>Name</th>
@@ -165,6 +188,40 @@ $getUserRequestedBooksResult = $getUserRequestedBooks->get_result();
                                     $row = $result->fetch_assoc();
 
                                     tableData($row, $borrowedIn, $dueDate);
+                                } catch (Exception $e) {
+                                    echo "Error: " . $e->getMessage();
+                                }
+                            }
+                        } else {
+                            echo '<tr><td>0 result</td></tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table" data-visible="false" id="requestTable">
+                <table>
+                    <thead>
+                        <th>Name</th>
+                        <th>Genre</th>
+                        <th>requestedOn</th>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if ($getUserRequestedBooksResult->num_rows > 0) {
+                            while ($requestData = $getUserRequestedBooksResult->fetch_assoc()) {
+                                try {
+                                    $requestedOn = $requestData["requestOn"];
+
+                                    // Get referenced Book on Book copy
+                                    $stmt = $conn->prepare("SELECT title, genre, type FROM books WHERE id = ?");
+                                    $stmt->bind_param("i", $requestData["bookRef"]);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
+                                    $row = $result->fetch_assoc();
+
+                                    tableDataR($row, $requestedOn);
                                 } catch (Exception $e) {
                                     echo "Error: " . $e->getMessage();
                                 }

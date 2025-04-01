@@ -1,7 +1,6 @@
 <?php
-session_start();
 // Redirect if already logged in
-if (isset($_SESSION["adminID"])) {
+if (isset($_COOKIE["admin"])) {
     header("Location: admin-dashboard.php");
     exit();
 }
@@ -44,10 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if ($_POST["password"] === $admin["password"]) {
 
-                $_SESSION["adminID"] = $admin["id"];
-                $_SESSION["email"] = $admin["email"];
-                $_SESSION["adminFName"] = $admin["firstName"];
-                $_SESSION["adminLName"] = $admin["lastName"];
+                setcookie("admin", $admin["id"], time() + (86400 * 30), "/");
 
                 header("Location: admin-dashboard.php");
                 exit();

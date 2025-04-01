@@ -1,3 +1,10 @@
+<?php
+if (isset($_COOKIE["student"])) {
+    header("Location: dashboard.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,8 +65,7 @@
                 // Verify the password
                 if (password_verify($_POST["password"], $user["password"])) {
                     // Password is correct - Start session
-                    session_start();
-                    $_SESSION["studentNumber"] = $_POST["studentNumber"];
+                    setcookie("student", $_POST["studentNumber"], time() + (86400 * 30), "/");
                     
                     // Redirect to dashboard
                     header("Location: dashboard.php");

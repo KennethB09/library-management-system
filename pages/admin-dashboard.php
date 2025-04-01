@@ -5,7 +5,7 @@ checkAdminAuth();
 require "../utility/dp-connection.php";
 
 $adminInfoStmt = $conn->prepare("SELECT * FROM admin WHERE id = ?");
-$adminInfoStmt->bind_param("i", $_SESSION["adminID"]);
+$adminInfoStmt->bind_param("i", $_COOKIE["admin"]);
 $adminInfoStmt->execute();
 $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
 

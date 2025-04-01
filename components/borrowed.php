@@ -94,12 +94,13 @@ if (isset($_GET['search'])) {
                                     $bookTitleStmt->bind_param("s", $ref['bookRef']);
                                     $bookTitleStmt->execute();
                                     $title = $bookTitleStmt->get_result()->fetch_assoc();
+                                    $borrowedOn = date("Y-m-d", strtotime($row['borrowedOn']));
                                     ?>
                                     <tr class="table-row">
                                         <td><?= htmlspecialchars($row['id']) ?></td>
                                         <td><?= htmlspecialchars($row['borrower']) ?></td>
                                         <td><?= htmlspecialchars($title['title']) ?></td>
-                                        <td><?= htmlspecialchars($row['borrowedOn']) ?></td>
+                                        <td><?= htmlspecialchars($borrowedOn) ?></td>
                                         <td><?= htmlspecialchars($row['dueDate']) ?></td>
                                         <td class="table-row-returned"><button class="cta-btn-primary" onclick="onReturn(event, '<?= $row['id'] ?>', '<?= $row['bookRef'] ?>', '<?= $row['borrower'] ?>')">Returned</button></td>
                                     </tr>

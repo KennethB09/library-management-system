@@ -8,14 +8,17 @@ body {
 
 main {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    width: 100%;
     gap: 1rem;
-    height: 100%;
+    padding: 0 5rem;
+    height: 90%;
 }
 
 .search-book-header {
     display: flex;
     justify-content: space-between;
+    height: 20%;
 
     .search-book-header-back-btn {
         cursor: pointer;
