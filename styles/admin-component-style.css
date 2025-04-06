@@ -355,7 +355,7 @@ main {
             width: 60%;
         }
 
-        .type-genre-copies-container {
+        .type-genre-copies-container, .availableIn-ebook-container{
             display: flex;
             width: 100%;
             gap: 1rem;
@@ -376,6 +376,28 @@ main {
 
                 input {
                     width: 100%;
+                }
+
+                input[type="file"][disabled] {
+                    border: none;
+                }
+
+                input[type="file"][disabled]::file-selector-button {
+                    background-color: transparent;
+                    color: var(--gray);
+                    border: 1px solid var(--gray);
+                    border-radius: 10px;
+                    font-size: var(--fontSize-sm);
+                    cursor: default;
+                }
+
+                input[type="file"]::file-selector-button {
+                    background-color: transparent;
+                    color: var(--blue);
+                    border: 1px solid var(--blue);
+                    border-radius: 10px;
+                    font-size: var(--fontSize-sm);
+                    cursor: pointer;
                 }
             }
         }

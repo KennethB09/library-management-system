@@ -6,7 +6,7 @@ $resultSearch;
 $result;
 $noResult;
 
-$stmt = $conn->prepare("SELECT id, title, author, genre, type, description FROM books");
+$stmt = $conn->prepare("SELECT id, title, author, genre, type, description, availableOn FROM books");
 $stmt->execute();
 $resultTotal = $stmt->get_result();
 
@@ -55,6 +55,7 @@ if (isset($_GET['search'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../styles/admin-component-style.css">
     <link rel="stylesheet" type="text/css" href="../styles/main.css">
+    <script defer src="../js/admin-manage.js"></script>
     <title>Dashboard | manage</title>
 </head>
 
@@ -112,7 +113,7 @@ if (isset($_GET['search'])) {
                                     $escaped_string = addslashes($row['description']);
                                     ?>
 
-                                    <tr class="table-row" onclick="onClickBook('<?= $row['id'] ?>', '<?= $row['title'] ?>', '<?= $row['author'] ?>', '<?= $row['type'] ?>', '<?= $row['genre'] ?>', '<?= $copiesRow ?>', '<?= $escaped_string ?>')">
+                                    <tr class="table-row" onclick="onClickBook('<?= $row['id'] ?>', '<?= $row['title'] ?>', '<?= $row['author'] ?>', '<?= $row['type'] ?>', '<?= $row['genre'] ?>', '<?= $copiesRow ?>', '<?= $escaped_string ?>', '<?= $row['availableOn'] ?>')">
                                         <td><?= htmlspecialchars($row['title']) ?></td>
                                         <td><?= htmlspecialchars($row['genre']) ?></td>
                                         <td><?= htmlspecialchars($row['type']) ?></td>
@@ -140,7 +141,7 @@ if (isset($_GET['search'])) {
                         <img class="icon-clr" src="../assets/close.svg" />
                     </button>
                 </div>
-                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data" method="post">
                     <div class="input-container title">
                         <label for="title">Title</label>
                         <input name="title" placeholder="Enter book title" required />
@@ -171,11 +172,28 @@ if (isset($_GET['search'])) {
                                 <option value="lang_ref">language reference</option>
                             </select>
                         </div>
-                        <div class="input-container">
+                        <div class="input-container" id="addFormCopiesInput">
                             <label for="copies">Copies</label>
-                            <input name="copies" type="number" placeholder="Enter book copies" required />
+                            <input name="copies" type="number" placeholder="Enter book copies" />
                         </div>
                     </div>
+                    <!--- upload --->
+                    <div class="availableIn-ebook-container">
+                        <div class="input-container">
+                            <label for="availableOn">Available In</label>
+                            <select name="availableOn" id="availableOnAdd" required>
+                                <option value="p">physical</option>
+                                <option value="d">digital</option>
+                                <option value="pd">both</option>
+                            </select>
+                        </div>
+                        <div class="input-container">
+                            <label for="ebook">Upload PDF</label>
+                            <input type="hidden" name="MAX_FILE_SIZE" value="100000000">
+                            <input type="file" id="fileInputAdd" name="ebook" accept=".pdf" disabled>
+                        </div>
+                    </div>
+                    <!--- upload --->
                     <div class="input-container">
                         <label for="description">Book about</label>
                         <textarea name="description" class="form-textarea" placeholder="Enter book description" required autocomplete="off"></textarea>
@@ -196,7 +214,7 @@ if (isset($_GET['search'])) {
                         <img class="icon-clr" src="../assets/close.svg" />
                     </button>
                 </div>
-                <form onsubmit="updateBook(event)" method="post" id="edit-form">
+                <form onsubmit="updateBook(event)" enctype="multipart/form-data" method="post" id="edit-form">
                     <input id="edit-form-bookId" name="id" hidden />
                     <div class="input-container title">
                         <label for="title">Title</label>
@@ -233,6 +251,17 @@ if (isset($_GET['search'])) {
                             <input id="edit-form-copies" name="copies" type="number" placeholder="Enter book copies" required />
                         </div>
                     </div>
+                    <div class="availableIn-ebook-container">
+                        <div class="input-container">
+                            <label for="availableOn">Available On</label>
+                            <input type="text" name="availableOn" id="availableOnEdit" readonly>
+                        </div>
+                        <div class="input-container" id="uploadInputContainer">
+                            <label for="ebook">Upload PDF</label>
+                            <input type="hidden" name="MAX_FILE_SIZE" value="100000000">
+                            <input type="file" id="fileInputEdit" name="ebook" accept=".pdf" >
+                        </div>
+                    </div>
                     <div class="input-container">
                         <label for="description">Book about</label>
                         <textarea id="edit-form-des" class="form-textarea" name="description" placeholder="Enter book description" required></textarea>
@@ -253,7 +282,7 @@ if (isset($_GET['search'])) {
                         <img class="icon-clr" src="../assets/close.svg" />
                     </button>
                 </div>
-                <p>Are you sure tou want to delete this book?</p>
+                <p>Are you sure you want to delete this book?</p>
                 <div class="btn-container">
                     <button class="cancel ghost-btn" onclick="openDeleteModal(false)">Cancel</button>
                     <button class="save cta-btn-primary" onclick="deleteBook(event)">Yes</button>
@@ -272,47 +301,120 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = "admin12345";
     $dbname = "lms_db";
 
+    
     try {
+        if (($_POST['availableOn'] === "p" || $_POST['availableOn'] === "pd") &&
+            (empty($_POST["copies"]) || (int)$_POST["copies"] <= 0)
+        ) {
+            throw new Exception("Please add at least one copy for physical books.");
+        }
+
         $conn = new mysqli($server, $username, $password, $dbname);
 
         if ($conn->connect_error) {
             throw new Exception("Connection failed: " . $conn->connect_error);
         }
 
-        $insertBookStmt = $conn->prepare("INSERT INTO books (title, type, genre, description, author) VALUES (?, ?, ?, ?, ?)");
+        $insertBookStmt = $conn->prepare("INSERT INTO books (title, type, genre, description, author, availableOn) VALUES (?, ?, ?, ?, ?, ?)");
 
         if (!$insertBookStmt) {
             throw new Exception("Prepare failed: " . $conn->error);
         }
 
         $insertBookStmt->bind_param(
-            "sssss",
+            "ssssss",
             $_POST["title"],
             $_POST["type"],
             $_POST["genre"],
             $_POST["description"],
             $_POST["author"],
+            $_POST["availableOn"]
         );
 
-        $num_copies = (int) $_POST["copies"];
+        if (isset($_POST['availableOn']) && $_POST['availableOn'] !== "p") {
+            $uploadDir = "../uploads/";
+            $uploadFile = $uploadDir . basename($_FILES['ebook']['name']);
 
-        if ($insertBookStmt->execute()) {
-            $bookId = $insertBookStmt->insert_id;
-            $insertBookStmt->close();
+            if (move_uploaded_file($_FILES['ebook']['tmp_name'], $uploadFile)) {
 
-            $values = [];
-            for ($i = 0; $i < $num_copies; $i++) {
-                $values[] = "($bookId, 'available')";
+                $insertBookStmt->execute();
+
+                $bookId = $insertBookStmt->insert_id;
+
+                $insertBookStmt->close();
+
+                $uploadStmt = $conn->prepare("INSERT INTO uploads (bookRef, location, fileName) VALUES (?, ?, ?)");
+                if (!$uploadStmt) {
+                    throw new Exception("Prepare failed: " . $conn->error);
+                }
+                $uploadStmt->bind_param("iss", $bookId, $uploadFile, $_FILES['ebook']['name']);
+                $uploadStmt->execute();
+                echo "Uploaded";
+            } else {
+                echo 'Error: ' . $_FILES['ebook']['error'];
+                exit("Upload Error");
             }
+        } else if (isset($_POST['availableOn']) && $_POST['availableOn'] === "pd") {
 
-            $sql = "INSERT INTO books_copy (bookRef, status) VALUES " . implode(", ", $values);
-            $conn->query($sql);
+            $num_copies = (int) $_POST["copies"];
 
-            echo "New record created successfully";
-            $conn->close();
+            if ($insertBookStmt->execute()) {
+
+                $bookId = $insertBookStmt->insert_id;
+
+                $insertBookStmt->close();
+
+                $uploadDir = "../uploads/";
+                $uploadFile = $uploadDir . basename($_FILES['file']['name']);
+
+                if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
+                    $uploadStmt = $conn->prepare("INSERT INTO uploads (bookRef, location, fileName) VALUES (?, ?, ?)");
+                    if (!$uploadStmt) {
+                        throw new Exception("Prepare failed: " . $conn->error);
+                    }
+                    $uploadStmt->bind_param("iss", $bookId, $uploadFile, $_FILES['file']['name']);
+                    $uploadStmt->execute();
+                } else {
+                    echo 'Error: ' . $_FILES['file']['error'];
+                    exit("Upload Error");
+                }
+
+                $values = [];
+                for ($i = 0; $i < $num_copies; $i++) {
+                    $values[] = "($bookId, 'available')";
+                }
+
+                $sql = "INSERT INTO books_copy (bookRef, status) VALUES " . implode(", ", $values);
+                $conn->query($sql);
+
+                echo "New record created successfully";
+            } else {
+                throw new Exception("Error executing statement: " . $insertBookStmt->error);
+            }
         } else {
-            throw new Exception("Error executing statement: " . $insertBookStmt->error);
+            $num_copies = (int) $_POST["copies"];
+
+            if ($insertBookStmt->execute()) {
+
+                $bookId = $insertBookStmt->insert_id;
+
+                $insertBookStmt->close();
+
+                $values = [];
+                for ($i = 0; $i < $num_copies; $i++) {
+                    $values[] = "($bookId, 'available')";
+                }
+
+                $sql = "INSERT INTO books_copy (bookRef, status) VALUES " . implode(", ", $values);
+                $conn->query($sql);
+
+                echo "New record created successfully";
+            } else {
+                throw new Exception("Error executing statement: " . $insertBookStmt->error);
+            }
         }
+
+        $conn->close();
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
     }

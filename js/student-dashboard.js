@@ -17,3 +17,14 @@ function switchTable(table) {
         borrowTableTitle[0].classList.add("title-clicked");
     }
 };
+
+function clickProfile() {
+    const modal = document.querySelector(".user-profile-modal-container");
+    const modalVisible = modal.getAttribute("data-visible");
+
+    if (modalVisible === "true") {
+        modal.setAttribute("data-visible", "false");
+    } else {
+        modal.setAttribute("data-visible", "true");
+    }
+}

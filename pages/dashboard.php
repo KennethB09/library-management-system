@@ -32,7 +32,7 @@ function waitListData($data, $status) {
     echo '</tr>';
 }
 
-$getUserInfo = $conn->prepare("SELECT studentNumber, firstName, lastName FROM users WHERE studentNumber =?");
+$getUserInfo = $conn->prepare("SELECT studentNumber, firstName, lastName, section, email, course FROM users WHERE studentNumber =?");
 $getUserInfo->bind_param("i", $_COOKIE["student"]);
 $getUserInfo->execute();
 $userInfoResult = $getUserInfo->get_result();
@@ -81,9 +81,51 @@ $getUserWaitListResult = $getUserWaitList->get_result();
 </head>
 
 <body>
+    <div class="user-profile-modal-container" data-visible="false">
+        <div class="user-profile-modal">
+            <div class="user-profile-modal-title-container">
+                <h1>Your Profile</h1>
+                <img src="../assets/close.svg" class="user-profile-modal-close-icon" onclick="clickProfile()">
+            </div>
+            <div class="user-profile-model-info-container">
+                <img src="../assets/pencil.svg" class="user-profile-modal-edit-icon">
+                <div class="user-profile-model-info">
+                    <div class="user-profile-model-info-1">
+                        <div class="user-info">
+                            <h1>First Name</h1>
+                            <p><?php echo $userInfoRow["firstName"]?></p>
+                        </div>
+                        <div class="user-info">
+                            <h1>Last Name</h1>
+                            <p><?php echo $userInfoRow["lastName"]?></p>
+                        </div>
+                        <div class="user-info">
+                            <h1>Section</h1>
+                            <p><?php echo $userInfoRow["section"]?></p>
+                        </div>
+                    </div>
+                    <div class="user-profile-model-info-2">
+                        <div class="user-info">
+                            <h1>Course</h1>
+                            <p><?php echo $userInfoRow["course"]?></p>
+                        </div>
+                        <div class="user-info">
+                            <h1>Student Number</h1>
+                            <p><?php echo $userInfoRow["studentNumber"]?></p>
+                        </div>
+                    </div>
+                    <div class="user-profile-model-info-3">
+                        <h1>Email</h1>
+                        <p><?php echo $userInfoRow["email"]?></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <header>
         <div class="user-profile">
-            <h2>Welcome, <?php echo $userInfoRow["firstName"] . " " . $userInfoRow["lastName"] ?></h2>
+            <img src="../assets/person-circle.svg" class="user-profile-icon" onclick="clickProfile()">
+            <h2><?php echo $userInfoRow["firstName"] . " " . $userInfoRow["lastName"] ?></h2>
         </div>
         <div class="search">
             <a href="./search-book.php">search books</a>

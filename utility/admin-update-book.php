@@ -20,26 +20,84 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $author = $_POST["author"];
     $bookId = $_POST["id"];
     $copies = $_POST["copies"];
+    $availableOn = $_POST["availableOn"];
+    $fileUpload = $_FILES["ebook"];
 
     try {
 
-        $updateBookStmt = $conn->prepare("UPDATE books SET title = ?, type = ?, genre = ?, description = ?, author = ? WHERE id = ?");
+        if ($availableOn === "Physical") {
+            $availableOn = "p";;
+        } else if ($availableOn === "Digital") {
+            $availableOn = "d";
+        } else {
+            $availableOn = "pd";
+        }
+
+        $updateBookStmt = $conn->prepare("UPDATE books SET title = ?, type = ?, genre = ?, description = ?, author = ?, availableOn = ? WHERE id = ?");
 
         if (!$updateBookStmt) {
             throw new Exception("Prepare failed: " . $conn->error);
         }
 
         $updateBookStmt->bind_param(
-            "ssssss",
+            "sssssss",
             $title,
             $type,
             $genre,
             $description,
             $author,
-            $bookId,
+            $availableOn,
+            $bookId
         );
 
         if ($updateBookStmt->execute()) {
+
+            if (isset($_FILES['ebook'])) {
+
+                switch ($_FILES['ebook']['error']) {
+                    case UPLOAD_ERR_OK:
+                        $uploadDir = "../uploads/";
+                        $uploadFile = $uploadDir . basename($_FILES['ebook']['name']);
+
+                        if (file_exists($uploadFile)) {
+                            throw new Exception("File already exists.");
+                        } else {
+                            $getPath = $conn->prepare("SELECT location FROM uploads WHERE bookRef = ?");
+                            $getPath->bind_param("i", $bookId);
+                            $getPath->execute();
+                            $result = $getPath->get_result();
+                            $row = $result->fetch_assoc();
+                            if (unlink($row["location"])) {
+                                if (move_uploaded_file($_FILES['ebook']['tmp_name'], $uploadFile)) {
+    
+                                    $updateStmt = $conn->prepare("UPDATE uploads SET location = ?, fileName = ? WHERE bookRef = ?");
+    
+                                    if (!$updateStmt) {
+                                        throw new Exception("Prepare failed: " . $conn->error);
+                                    }
+    
+                                    $updateStmt->bind_param("sss", $uploadFile, $_FILES['ebook']['name'], $bookId,);
+                                    $updateStmt->execute();
+                                } else {
+                                    throw new Exception("File update error.");
+                                }
+                            } else {
+                                throw new Exception("File deletion error.");
+                            }
+                        }
+                        break;
+                    case UPLOAD_ERR_NO_FILE:
+                        break;
+                    case UPLOAD_ERR_INI_SIZE:
+                    case UPLOAD_ERR_FORM_SIZE:
+                        throw new Exception("File exceeds allowed size limit");
+                        break;
+                    default:
+                        throw new Exception("Unknown error occurred during upload");
+                }
+            } else {
+                throw new Exception("File input not found in form submission");
+            }
 
             //Update book copies
             $countQuery = "SELECT COUNT(*) as total FROM books_copy WHERE bookRef = ?";
@@ -71,7 +129,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 $sql = "INSERT INTO books_copy (bookRef, status) VALUES " . implode(", ", $values);
                 $conn->query($sql);
-          
             } else {
                 // Calculate how many copies to delete
                 $copiesToDelete = max(0, $totalCopies - $copies);
