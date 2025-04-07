@@ -6,23 +6,33 @@ const bookType = document.getElementById("bookType");
 const bookGenre = document.getElementById("bookGenre");
 const bookAvailable = document.getElementById("bookAvailable");
 const bookTotal = document.getElementById("bookTotal");
+const format = document.getElementById("format");
 
 const requestBtn = document.querySelector(".search-book-sidebar-btn-request");
 const waitListBtn = document.querySelector(".search-book-sidebar-btn-wait-list");
 
 let selectedId = "";
 
-function onClickBook(id, title, author, type, genre, description, available, total) {
+function onClickBook(id, title, author, type, genre, description, available, total, format) {
     
     selectedId = id
 
-    if (available === "0") {
+    if (available === "0" && format === "physical") {
         requestBtn.disabled = true;
         waitListBtn.disabled = false;
     } else {
         requestBtn.disabled = false;
         waitListBtn.disabled = false;
+        
+        if (format === "physical") {
+            format.innerText = "Physical";
+        } else if (format === "both") {
+            format.innerText = "Physical / Digital";
+        } else {
+            format.innerText = "Digital";
+        }
     }
+
 
     bookId.value = id;
     bookTitle.innerText = title;
@@ -32,7 +42,6 @@ function onClickBook(id, title, author, type, genre, description, available, tot
     bookGenre.innerText = genre;
     bookAvailable.innerText = available;
     bookTotal.innerText = total;
-
 }
 
 function waitList(event, userId) {

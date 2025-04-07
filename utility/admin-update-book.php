@@ -20,20 +20,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $author = $_POST["author"];
     $bookId = $_POST["id"];
     $copies = $_POST["copies"];
-    $availableOn = $_POST["availableOn"];
+    $format = $_POST["format"];
     $fileUpload = $_FILES["ebook"];
 
     try {
 
-        if ($availableOn === "Physical") {
-            $availableOn = "p";;
-        } else if ($availableOn === "Digital") {
-            $availableOn = "d";
+        if ($format === "Physical") {
+            $format = "physical";;
+        } else if ($format === "Digital") {
+            $format = "digital";
         } else {
-            $availableOn = "pd";
+            $format = "both";
         }
 
-        $updateBookStmt = $conn->prepare("UPDATE books SET title = ?, type = ?, genre = ?, description = ?, author = ?, availableOn = ? WHERE id = ?");
+        $updateBookStmt = $conn->prepare("UPDATE books SET title = ?, type = ?, genre = ?, description = ?, author = ?, format = ? WHERE id = ?");
 
         if (!$updateBookStmt) {
             throw new Exception("Prepare failed: " . $conn->error);
@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $genre,
             $description,
             $author,
-            $availableOn,
+            $format,
             $bookId
         );
 
@@ -56,17 +56,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 switch ($_FILES['ebook']['error']) {
                     case UPLOAD_ERR_OK:
+
                         $uploadDir = "../uploads/";
                         $uploadFile = $uploadDir . basename($_FILES['ebook']['name']);
 
                         if (file_exists($uploadFile)) {
                             throw new Exception("File already exists.");
                         } else {
+
                             $getPath = $conn->prepare("SELECT location FROM uploads WHERE bookRef = ?");
                             $getPath->bind_param("i", $bookId);
                             $getPath->execute();
                             $result = $getPath->get_result();
                             $row = $result->fetch_assoc();
+                            
                             if (unlink($row["location"])) {
                                 if (move_uploaded_file($_FILES['ebook']['tmp_name'], $uploadFile)) {
     

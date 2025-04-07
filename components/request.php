@@ -86,19 +86,20 @@ if (isset($_GET['search'])) {
                                 <?php try { ?>
                                     <?php
 
-                                    $bookTitleStmt = $conn->prepare("SELECT id, title FROM books WHERE id = ?");
+                                    $bookTitleStmt = $conn->prepare("SELECT id, title, format FROM books WHERE id = ?");
                                     $bookTitleStmt->bind_param("s", $row['bookRef']);
                                     $bookTitleStmt->execute();
                                     $title = $bookTitleStmt->get_result()->fetch_assoc();
                                     $requestedOn = date("Y-m-d", strtotime($row['requestOn']));
+                                    $dueDate = date("Y-m-d", strtotime($row['dueDate']));
                                     ?>
                                     <tr class="table-row">
                                         <td><?= htmlspecialchars($row['id']) ?></td>
                                         <td><?= htmlspecialchars($row['requesterId']) ?></td>
                                         <td><?= htmlspecialchars($title['title']) ?></td>
-                                        <td><?= htmlspecialchars($row['requestOn']) ?></td>
                                         <td><?= htmlspecialchars($requestedOn) ?></td>
-                                        <td class="table-row-approve"><button class="cta-btn-primary" onclick="onApprove(event, '<?= $row['id'] ?>', '<?= $title['id'] ?>', '<?= htmlspecialchars($row['dueDate']) ?>', '<?= $row['requesterId'] ?>')">Approve</button></td>
+                                        <td><?= htmlspecialchars($dueDate) ?></td>
+                                        <td class="table-row-approve"><button class="cta-btn-primary" onclick="onApprove(event, '<?= $row['id'] ?>', '<?= $title['id'] ?>', '<?= htmlspecialchars($row['dueDate']) ?>', '<?= $row['requesterId'] ?>', '<?= $title['format'] ?>')">Approve</button></td>
                                         <td class="table-row-decline"><button class="cta-btn-secondary" onclick="onDecline(event, '<?= $row['id'] ?>')">Decline</button></td>
                                     </tr>
 

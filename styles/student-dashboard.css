@@ -68,6 +68,50 @@ header {
     }
 }
 
+.view-book {
+    display: none;
+    animation-name: fadeIn;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-in-out;
+}
+
+.view-book[data-visible = "true"] {
+    display: block;
+    position: absolute;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--modal-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .view-book-close-icon-container {
+        display: flex;
+
+        .view-book-close-icon {
+            justify-self: end;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+    }
+
+    #canvas_container {
+        width: 800px;
+        height: 450px;
+        overflow: auto;
+    }
+    
+    #canvas_container {
+        background: #333;
+        text-align: center;
+        border: solid 3px;
+    }
+
+}
+
+
 .user-profile-modal-container {
     display: none;
     animation-name: fadeIn;

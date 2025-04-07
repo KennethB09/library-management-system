@@ -6,7 +6,7 @@ $resultSearch;
 $result;
 $noResult;
 
-$stmt = $conn->prepare("SELECT id, title, author, genre, type, description, availableOn FROM books");
+$stmt = $conn->prepare("SELECT id, title, author, genre, type, description, format FROM books");
 $stmt->execute();
 $resultTotal = $stmt->get_result();
 
@@ -113,11 +113,11 @@ if (isset($_GET['search'])) {
                                     $escaped_string = addslashes($row['description']);
                                     ?>
 
-                                    <tr class="table-row" onclick="onClickBook('<?= $row['id'] ?>', '<?= $row['title'] ?>', '<?= $row['author'] ?>', '<?= $row['type'] ?>', '<?= $row['genre'] ?>', '<?= $copiesRow ?>', '<?= $escaped_string ?>', '<?= $row['availableOn'] ?>')">
+                                    <tr class="table-row" onclick="onClickBook('<?= $row['id'] ?>', '<?= $row['title'] ?>', '<?= $row['author'] ?>', '<?= $row['type'] ?>', '<?= $row['genre'] ?>', '<?= $copiesRow ?>', '<?= $escaped_string ?>', '<?= $row['format'] ?>')">
                                         <td><?= htmlspecialchars($row['title']) ?></td>
                                         <td><?= htmlspecialchars($row['genre']) ?></td>
                                         <td><?= htmlspecialchars($row['type']) ?></td>
-                                        <td><?= htmlspecialchars($copies['total']) ?></td>
+                                        <td><?= $row["format"] === "digital" ? htmlspecialchars($row["format"]) : htmlspecialchars($copies['total']) ?></td>
                                     </tr>
 
                                 <?php } catch (Exception $e) { ?>
@@ -180,15 +180,15 @@ if (isset($_GET['search'])) {
                     <!--- upload --->
                     <div class="availableIn-ebook-container">
                         <div class="input-container">
-                            <label for="availableOn">Available In</label>
-                            <select name="availableOn" id="availableOnAdd" required>
-                                <option value="p">physical</option>
-                                <option value="d">digital</option>
-                                <option value="pd">both</option>
+                            <label for="format">Format</label>
+                            <select name="format" id="formatAdd" required>
+                                <option value="physical">physical</option>
+                                <option value="digital">digital</option>
+                                <option value="both">both</option>
                             </select>
                         </div>
                         <div class="input-container">
-                            <label for="ebook">Upload PDF</label>
+                            <label for="ebook">PDF</label>
                             <input type="hidden" name="MAX_FILE_SIZE" value="100000000">
                             <input type="file" id="fileInputAdd" name="ebook" accept=".pdf" disabled>
                         </div>
@@ -253,8 +253,8 @@ if (isset($_GET['search'])) {
                     </div>
                     <div class="availableIn-ebook-container">
                         <div class="input-container">
-                            <label for="availableOn">Available On</label>
-                            <input type="text" name="availableOn" id="availableOnEdit" readonly>
+                            <label for="format">Format</label>
+                            <input type="text" name="format" id="formatEdit" readonly>
                         </div>
                         <div class="input-container" id="uploadInputContainer">
                             <label for="ebook">Upload PDF</label>
@@ -296,14 +296,14 @@ if (isset($_GET['search'])) {
 
 <?php
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
     $server = "localhost";
     $username = "lms_admin";
     $password = "admin12345";
     $dbname = "lms_db";
 
-    
     try {
-        if (($_POST['availableOn'] === "p" || $_POST['availableOn'] === "pd") &&
+        if (($_POST['format'] === "physical" || $_POST['format'] === "both") &&
             (empty($_POST["copies"]) || (int)$_POST["copies"] <= 0)
         ) {
             throw new Exception("Please add at least one copy for physical books.");
@@ -315,7 +315,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             throw new Exception("Connection failed: " . $conn->connect_error);
         }
 
-        $insertBookStmt = $conn->prepare("INSERT INTO books (title, type, genre, description, author, availableOn) VALUES (?, ?, ?, ?, ?, ?)");
+        $insertBookStmt = $conn->prepare("INSERT INTO books (title, type, genre, description, author, format) VALUES (?, ?, ?, ?, ?, ?)");
 
         if (!$insertBookStmt) {
             throw new Exception("Prepare failed: " . $conn->error);
@@ -328,10 +328,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_POST["genre"],
             $_POST["description"],
             $_POST["author"],
-            $_POST["availableOn"]
+            $_POST["format"]
         );
 
-        if (isset($_POST['availableOn']) && $_POST['availableOn'] !== "p") {
+        if (isset($_POST['format']) && $_POST['format'] !== "physical") {
+            
             $uploadDir = "../uploads/";
             $uploadFile = $uploadDir . basename($_FILES['ebook']['name']);
 
@@ -344,17 +345,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $insertBookStmt->close();
 
                 $uploadStmt = $conn->prepare("INSERT INTO uploads (bookRef, location, fileName) VALUES (?, ?, ?)");
+
                 if (!$uploadStmt) {
                     throw new Exception("Prepare failed: " . $conn->error);
                 }
+
                 $uploadStmt->bind_param("iss", $bookId, $uploadFile, $_FILES['ebook']['name']);
-                $uploadStmt->execute();
-                echo "Uploaded";
+
+                if ($uploadStmt->execute()) {
+
+                    $insertOneCopy = $conn->prepare("INSERT INTO books_copy (bookRef, format) VALUES (?, ?)");
+
+                    if (!$insertOneCopy) {
+                        throw new Exception("Prepare failed: " . $conn->error);
+                    }
+
+                    $insertOneCopy->bind_param("is", $bookId, $_POST['format']);
+
+                    $insertOneCopy->execute();
+
+                } else {
+                    throw new Exception("Error inserting digital copy: ". $conn->error);
+                }
+                
             } else {
                 echo 'Error: ' . $_FILES['ebook']['error'];
                 exit("Upload Error");
             }
-        } else if (isset($_POST['availableOn']) && $_POST['availableOn'] === "pd") {
+        } else if (isset($_POST['format']) && $_POST['format'] === "both") {
 
             $num_copies = (int) $_POST["copies"];
 

@@ -6,14 +6,14 @@ const tableBody = document.getElementById("table-body");
 const tableRows = document.getElementsByClassName("table-row");
 const textArea = document.getElementById("edit-form-des");
 
-function setInputValue(bookId, title, author, type, genre, copies, des, availableOn) {
+function setInputValue(bookId, title, author, type, genre, copies, des, format) {
 
-    const availableOnEdit = document.getElementById("availableOnEdit");
+    const formatEdit = document.getElementById("formatEdit");
     const uploadInputContainer = document.getElementById("uploadInputContainer");
-    const available = availableOn === undefined || availableOn === "" ? "p" : availableOn;
+    const available = format === undefined || format === "" ? "physical" : format;
 
     selectedBook = bookId;
-    selectedBookAvailableOn = availableOn;
+    selectedBookAvailableOn = format;
 
     document.getElementById("edit-form-title").value = title;
     document.getElementById("edit-form-author").value = author;
@@ -23,15 +23,15 @@ function setInputValue(bookId, title, author, type, genre, copies, des, availabl
     textArea.value = des;
     document.getElementById("edit-form-bookId").value = bookId;
 
-    if (available === "p") {
+    if (available === "physical") {
         uploadInputContainer.style.display = "none";
-        availableOnEdit.value = "Physical";
-    } else if (available === "pd") {
+        formatEdit.value = "Physical";
+    } else if (available === "both") {
         uploadInputContainer.style.display = "block";
-        availableOnEdit.value = "Physical / Digital";
+        formatEdit.value = "Physical / Digital";
     } else {
         uploadInputContainer.style.display = "block";
-        availableOnEdit.value = "Digital";
+        formatEdit.value = "Digital";
     }
 }
 
@@ -64,11 +64,11 @@ for (let i = 0; i < tableRows.length; i++) {
     })
 }
 
-function onClickBook(bookId, title, author, type, genre, copies, des, availableOn) {
+function onClickBook(bookId, title, author, type, genre, copies, des, format) {
 
     activeBtn(true);
 
-    setInputValue(bookId, title, author, type, genre, copies, des, availableOn);
+    setInputValue(bookId, title, author, type, genre, copies, des, format);
 };
 
 function openAddModal(isOpen) {
@@ -124,7 +124,7 @@ function deleteBook(event) {
 
     let formData = new FormData();
     formData.append("bookId", selectedBook);
-    formData.append("availableOn", selectedBookAvailableOn);
+    formData.append("format", selectedBookAvailableOn);
     fetch("../utility/admin-delete-book.php", {
         method: "POST",
         body: formData

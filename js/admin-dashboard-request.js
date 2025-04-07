@@ -1,5 +1,6 @@
-function onApprove(event, requestId, bookRef, dueDate, borrower) {
+function onApprove(event, requestId, bookRef, dueDate, borrower, format) {
     event.preventDefault();
+    console.log(format)
 
     let formData = new FormData();
 
@@ -7,7 +8,7 @@ function onApprove(event, requestId, bookRef, dueDate, borrower) {
     formData.append("bookRef", bookRef);
     formData.append("dueDate", dueDate);
     formData.append("borrower", borrower);
-
+    formData.append("format", format);
     fetch("../controllers/approve.php", {
         method: "POST",
         body: formData

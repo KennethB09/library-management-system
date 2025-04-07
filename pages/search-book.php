@@ -7,9 +7,9 @@ require "../utility/dp-connection.php";
 
 $resultSearch;
 $result;
-$noResult;
+$noResult = "";
 
-$bookStmt = $conn->prepare("SELECT id, title, type, genre, description, author FROM books");
+$bookStmt = $conn->prepare("SELECT id, title, type, genre, description, author, format FROM books");
 $bookStmt->execute();
 
 $bookResult = $bookStmt->get_result();
@@ -34,16 +34,13 @@ if (isset($_GET['search'])) {
             $noResult = "No " . $searchParam . " book found in " .  $typeParam;
             $result = $bookResult;
         } else {
-            $noResult = "";
             $result = $resultSearch;
         }
     } else {
         $result = $bookResult;
-        $noResult = "";
     }
 } else {
     $result = $bookResult;
-    $noResult = "";
 }
 
 ?>
@@ -107,7 +104,7 @@ if (isset($_GET['search'])) {
                         $escaped_string = addslashes($row['description']);
                         ?>
 
-                        <div class="search-result-card" onclick="onClickBook('<?= $row['id'] ?>', '<?= $row['title'] ?>', '<?= $row['author'] ?>', '<?= $row['type'] ?>', '<?= $row['genre'] ?>', '<?= $escaped_string ?>', '<?= $availableRow ?>', '<?= $copiesRow ?>')">
+                        <div class="search-result-card" onclick="onClickBook('<?= $row['id'] ?>', '<?= $row['title'] ?>', '<?= $row['author'] ?>', '<?= $row['type'] ?>', '<?= $row['genre'] ?>', '<?= $escaped_string ?>', '<?= $availableRow ?>', '<?= $copiesRow ?>', '<?= $row['format'] ?>')">
                             <h1 class="search-result-card-title"><?= htmlspecialchars($row['title']) ?></h1>
                             <div class="search-result-card-info">
                                 <h2>Type: <?= htmlspecialchars($row['type']) ?></h2>
@@ -147,8 +144,12 @@ if (isset($_GET['search'])) {
                         <p id="bookGenre"></p>
                     </div>
                     <div class="search-book-sidebar-available">
-                        <h1>available: </h1>
+                        <h1>available copies: </h1>
                         <p><span id="bookAvailable"></span>/<span id="bookTotal"></span></p>
+                    </div>
+                    <div class="search-book-sidebar-format">
+                        <h1>available On: </h1>
+                        <p id="format"></p>
                     </div>
                 </div>
                 <div class="search-book-sidebar-btn-container">

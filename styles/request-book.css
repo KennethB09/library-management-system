@@ -83,8 +83,15 @@ body {
             border-radius: 10px;
         }
 
-        .request-book-input {
-            border: 1px solid var(--gray);
+        select {
+            width: 100%;
+            padding: .5rem;
+            border-radius: 10px;
+            color: var(--gray)
+        }
+
+        select:focus {
+            outline-color: var(--blue);
         }
     }
 

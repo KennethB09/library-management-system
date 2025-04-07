@@ -28,3 +28,4 @@ function clickProfile() {
         modal.setAttribute("data-visible", "true");
     }
 }
+

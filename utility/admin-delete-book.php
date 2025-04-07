@@ -14,7 +14,7 @@ if ($conn->connect_error) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $bookId = $_POST["bookId"];
-    $availableOn = $_POST["availableOn"];
+    $format = $_POST["format"];
 
     try {
 
@@ -40,15 +40,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             );
             $deleteBookCopiesStmt->execute();
 
-            if ($availableOn !== "p") {
+            if ($format !== "physical") {
 
                 $getPath = $conn->prepare("SELECT location FROM uploads WHERE bookRef = ?");
                 $getPath->bind_param("i", $bookId);
                 $getPath->execute();
                 $result = $getPath->get_result();
                 $row = $result->fetch_assoc();
-                
+
                 if (unlink($row["location"])) {
+
+                    $deleteBookCopiesStmt = $conn->prepare("DELETE FROM books_copy WHERE bookRef = ?");
+                    $deleteBookCopiesStmt->bind_param(
+                        "s",
+                        $bookId,
+                    );
+                    $deleteBookCopiesStmt->execute();
+
                     echo "File deleted successfully";
                 }
             }
