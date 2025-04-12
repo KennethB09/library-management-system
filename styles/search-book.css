@@ -108,6 +108,10 @@ main {
                 h1 {
                     font-size: var(--fontSize-sm);
                 }
+
+                p {
+                    color: var(--gray);
+                }
             }
         }
     }

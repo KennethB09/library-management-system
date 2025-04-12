@@ -101,10 +101,11 @@ if (isset($_GET['search'])) {
                         $available = $availableStmt->get_result()->fetch_assoc();
                         $availableRow = $available['available'];
 
-                        $escaped_string = addslashes($row['description']);
+                        $escaped_string = json_encode($row['description'], JSON_HEX_QUOT | JSON_HEX_APOS);
+                        $escaped_string = substr($escaped_string, 1, -1);
                         ?>
 
-                        <div class="search-result-card" onclick="onClickBook('<?= $row['id'] ?>', '<?= $row['title'] ?>', '<?= $row['author'] ?>', '<?= $row['type'] ?>', '<?= $row['genre'] ?>', '<?= $escaped_string ?>', '<?= $availableRow ?>', '<?= $copiesRow ?>', '<?= $row['format'] ?>')">
+                        <div class="search-result-card" onclick="onClickBook('<?= $row['id'] ?>', '<?= $row['title'] ?>', '<?= $row['author'] ?>', '<?= $row['type'] ?>', '<?= $row['genre'] ?>', '<?= $escaped_string ?>', '<?= $availableRow ?>', '<?= $copiesRow ?>', '<?php echo htmlspecialchars($row['format']) ?>')">
                             <h1 class="search-result-card-title"><?= htmlspecialchars($row['title']) ?></h1>
                             <div class="search-result-card-info">
                                 <h2>Type: <?= htmlspecialchars($row['type']) ?></h2>
@@ -148,8 +149,8 @@ if (isset($_GET['search'])) {
                         <p><span id="bookAvailable"></span>/<span id="bookTotal"></span></p>
                     </div>
                     <div class="search-book-sidebar-format">
-                        <h1>available On: </h1>
-                        <p id="format"></p>
+                        <h1>format: </h1>
+                        <p id="bookFormat"></p>
                     </div>
                 </div>
                 <div class="search-book-sidebar-btn-container">

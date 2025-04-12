@@ -43,7 +43,7 @@ function waitListData($data, $status)
     echo '</tr>';
 }
 
-$getUserInfo = $conn->prepare("SELECT studentNumber, firstName, lastName, section, email, course FROM users WHERE studentNumber =?");
+$getUserInfo = $conn->prepare("SELECT id, studentNumber, firstName, lastName, section, email, course, password FROM users WHERE studentNumber =?");
 $getUserInfo->bind_param("i", $_COOKIE["student"]);
 $getUserInfo->execute();
 $userInfoResult = $getUserInfo->get_result();
@@ -87,6 +87,11 @@ $getUserWaitListResult = $getUserWaitList->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../styles/student-dashboard.css">
     <link rel="stylesheet" type="text/css" href="../styles/main.css">
+    <script>
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href)
+        }
+    </script>
     <script defer src="../js/student-dashboard.js"></script>
     <script src="../js/view-book-pdf.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.min.js"></script>
@@ -101,10 +106,10 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                 <h1>Your Profile</h1>
                 <img src="../assets/close.svg" class="user-profile-modal-close-icon" onclick="clickProfile()">
             </div>
-            <div class="user-profile-model-info-container">
-                <img src="../assets/pencil.svg" class="user-profile-modal-edit-icon">
-                <div class="user-profile-model-info">
-                    <div class="user-profile-model-info-1">
+            <div class="user-profile-modal-info-container" data-visible="true">
+                <img src="../assets/pencil.svg" class="user-profile-modal-edit-icon" onclick="editProfile()">
+                <div class="user-profile-modal-info">
+                    <div class="user-profile-modal-info-1">
                         <div class="user-info">
                             <h1>First Name</h1>
                             <p><?php echo $userInfoRow["firstName"] ?></p>
@@ -118,7 +123,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                             <p><?php echo $userInfoRow["section"] ?></p>
                         </div>
                     </div>
-                    <div class="user-profile-model-info-2">
+                    <div class="user-profile-modal-info-2">
                         <div class="user-info">
                             <h1>Course</h1>
                             <p><?php echo $userInfoRow["course"] ?></p>
@@ -128,47 +133,147 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                             <p><?php echo $userInfoRow["studentNumber"] ?></p>
                         </div>
                     </div>
-                    <div class="user-profile-model-info-3">
+                    <div class="user-profile-modal-info-3">
                         <h1>Email</h1>
                         <p><?php echo $userInfoRow["email"] ?></p>
                     </div>
                 </div>
             </div>
+            <!-- User Profile Edit Form -->
+            <div class="user-profile-modal-form-container" data-visible="false">
+                <form class="user-profile-modal-form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                    <div class="user-profile-modal-form-1">
+                        <div class="user-form">
+                            <label for="fName">First Name</label>
+                            <input name="fName" value="<?php echo $userInfoRow["firstName"] ?>">
+                        </div>
+                        <div class="user-form">
+                            <label for="lName">Last Name</label>
+                            <input name="lName" value="<?php echo $userInfoRow["lastName"] ?>">
+                        </div>
+                        <div class="user-form">
+                            <label for="section">Section</label>
+                            <input name="section" value="<?php echo $userInfoRow["section"] ?>">
+                        </div>
+                    </div>
+                    <div class="user-profile-modal-form-2">
+                        <label for="cp">Change Password</label>
+                        <input name="cp" placeholder="Type your new password" minlength="8">
+                    </div>
+                    <div class="user-profile-modal-form-btn">
+                        <button class="ghost-btn" type="button" onclick="editProfile()">Cancel</button>
+                        <button class="cta-btn-primary" name="user-profile-update" type="submit">Save</button>
+                    </div>
+                </form>
+
+                <?php
+
+                if (isset($_POST["user-profile-update"])) {
+
+                    $server = "localhost";
+                    $username = "lms_admin";
+                    $password = "admin12345";
+                    $dbname = "lms_db";
+
+                    $firstName = $_POST["fName"];
+                    $lastName = $_POST["lName"];
+                    $section = $_POST["section"];
+                    $newPass = $_POST["cp"];
+                    $userId = $userInfoRow["id"];
+
+                    try {
+                        $conn = new mysqli($server, $username, $password, $dbname);
+
+                        if ($conn->connect_error) {
+                            throw new Exception("Connection failed: " . $conn->connect_error);
+                        }
+
+                        if (empty($_POST["cp"])) {
+
+                            $updateProfile = $conn->prepare("UPDATE users SET firstName = ?, lastName = ?, section = ? WHERE id = ?");
+
+                            if (!$updateProfile) {
+                                throw new Exception("Prepare failed: " . $conn->error);
+                            }
+
+                            $updateProfile->bind_param("ssss", $firstName, $lastName, $section, $userId);
+                            $updateProfile->execute();
+                        } else {
+
+                            $updateProfile = $conn->prepare("UPDATE users SET firstName = ?, lastName = ?, section = ?, password = ? WHERE id = ?");
+
+                            if (!$updateProfile) {
+                                throw new Exception("Prepare failed: " . $conn->error);
+                            }
+
+                            $hashedPassword = password_hash($newPass, PASSWORD_DEFAULT);
+
+                            $updateProfile->bind_param("sssss", $firstName, $lastName, $section, $hashedPassword, $userId);
+                            $updateProfile->execute();
+                        }
+
+                        $updateProfile->close();
+                    } catch (Exception $e) {
+                        echo "Error: " . $e->getMessage();
+                    }
+                }
+
+                ?>
+
+            </div>
         </div>
     </div>
 
     <div class="view-book" data-visible="false" id="viewBook">
-        <div id="my_pdf_viewer">
+        <div id="my_pdf_viewer" class="pdf-viewer-container">
             <div class="view-book-close-icon-container"><img src="../assets/close.svg" class="view-book-close-icon" onclick="openBook()"></div>
             <div id="canvas_container">
                 <canvas id="pdf_renderer"></canvas>
             </div>
-            <div id="navigation_controls">
-                <button id="go_previous">Previous</button>
-                <input id="current_page" value="1" type="number" />
-                <button id="go_next">Next</button>
-            </div>
-            <div id="zoom_controls">
-                <button id="zoom_in">+</button>
-                <button id="zoom_out">-</button>
+            <div class="pdf-viewer-navigation-container">
+                <div id="navigation_controls">
+                    <button id="go_previous">Previous</button>
+                    <input id="current_page" value="1" type="number" />
+                    <button id="go_next">Next</button>
+                </div>
+                <div id="zoom_controls">
+                    <button id="zoom_in">+</button>
+                    <button id="zoom_out">-</button>
+                </div>
             </div>
         </div>
     </div>
 
     <header>
+        <div class="search" onclick="window.location.href = './search-book.php'">
+            <img src="../assets/search.svg" class="search-icon">
+            <p>search books</p>
+        </div>
         <div class="user-profile">
-            <img src="../assets/person-circle.svg" class="user-profile-icon" onclick="clickProfile()">
-            <h2><?php echo $userInfoRow["firstName"] . " " . $userInfoRow["lastName"] ?></h2>
-        </div>
-        <div class="search">
-            <a href="./search-book.php">search books</a>
-        </div>
-        <div class="logout-container">
-            <button class="dashboard-logout-btn ghost-btn" onclick="window.location.href = '../utility/logout.php'">logout</button>
+            <button><img src="../assets/notifications-outline.svg" class="notifications-icon"></button>
+            <button onclick="toggleMenu()" class="user-profile-btn"><img src="../assets/person-circle.svg" class="user-profile-icon"></button>
+
+            <div class="user-profile-dialogue" data-visible="false">
+                <div class="user-profile-dialogue-items">
+                    <button onclick="clickProfile()"><img src="../assets/person-outline.svg"> Profile</button>
+                    <button><img src="../assets/sunny-outline.svg"> Theme</button>
+                    <button><img src="../assets/notifications-off-outline.svg"> Notification</button>
+                </div>
+                <button onclick="window.location.href = '../utility/logout.php'">Log-out</button>
+            </div>
         </div>
     </header>
+
     <main>
+
         <div class="section-1-container">
+
+            <div class="section-1-welcome-card">
+                <h1>Welcome, <wbr> <?php echo $userInfoRow["firstName"] ?>!</h1>
+                <br>
+                <p>Today is <span><?php echo date("F d, Y") ?></span></p>
+            </div>
+
             <div class="section-1-card-container">
                 <div class="section-1-card-borrowed">
                     <h1>Borrowed</h1>
@@ -179,6 +284,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                         <span>TOTAL</span>
                     </div>
                 </div>
+
                 <div class="section-1-card-requested">
                     <h1>Requested</h1>
                     <div>
@@ -189,59 +295,28 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                     </div>
                 </div>
             </div>
-            <div class="table-container section-1-table-container">
-                <h1>Wait list</h1>
-                <div class="table section-1-table">
-                    <table>
-                        <thead>
-                            <th>Name</th>
-                            <th>Genre</th>
-                            <th>Status</th>
-                        </thead>
-                        <tbody>
-                            <?php
-                            if ($getUserWaitListResult->num_rows > 0) {
-                                while ($waitListData = $getUserWaitListResult->fetch_assoc()) {
-                                    try {
 
-                                        $getCopy = $conn->prepare("SELECT bookRef, status FROM books_copy WHERE id = ?");
-                                        $getCopy->bind_param("i", $waitListData["bookRef"]);
-                                        $getCopy->execute();
-                                        $copyData = $getCopy->get_result()->fetch_assoc();
+        </div>
 
-                                        $stmt = $conn->prepare("SELECT title, genre FROM books WHERE id = ?");
-                                        $stmt->bind_param("i", $copyData["bookRef"]);
-                                        $stmt->execute();
-                                        $result = $stmt->get_result();
-                                        $row = $result->fetch_assoc();
-
-                                        waitListData($row, $copyData["status"]);
-                                    } catch (Exception $e) {
-                                        echo "Error: " . $e->getMessage();
-                                    }
-                                }
-                            } else {
-                                echo '<tr><td>0 result</td></tr>';
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
         <div class="table-container">
+
             <div class="table-title-container">
                 <h1 class="borrow-table-title title-clicked" onclick="switchTable('borrow')">Borrowed Books</h1>
+                <hr>
                 <h2 class="request-table-title" onclick="switchTable('request')">Requested Books</h2>
+                <hr>
+                <h2 class="waitList-table-title" onclick="switchTable('waitList')">Wait-List</h2>
             </div>
+
             <div class="table" data-visible="true" id="borrowTable">
                 <table>
                     <thead>
                         <th>Name</th>
                         <th>Genre</th>
                         <th>Type</th>
-                        <th>Borrowed in</th>
-                        <th>Return on</th>
+                        <th>Borrowed In</th>
+                        <th>Due Date</th>
                     </thead>
                     <tbody>
                         <?php if ($borrowedBooksResult->num_rows > 0) { ?>
@@ -332,7 +407,44 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                     </tbody>
                 </table>
             </div>
-        </div>
+
+            <div class="table" data-visible="false" id="waitListTable">
+                <table>
+                    <thead>
+                        <th>Name</th>
+                        <th>Genre</th>
+                        <th>Status</th>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if ($getUserWaitListResult->num_rows > 0) {
+                            while ($waitListData = $getUserWaitListResult->fetch_assoc()) {
+                                try {
+
+                                    $getCopy = $conn->prepare("SELECT bookRef, status FROM books_copy WHERE id = ?");
+                                    $getCopy->bind_param("i", $waitListData["bookRef"]);
+                                    $getCopy->execute();
+                                    $copyData = $getCopy->get_result()->fetch_assoc();
+
+                                    $stmt = $conn->prepare("SELECT title, genre FROM books WHERE id = ?");
+                                    $stmt->bind_param("i", $copyData["bookRef"]);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
+                                    $row = $result->fetch_assoc();
+
+                                    waitListData($row, $copyData["status"]);
+                                } catch (Exception $e) {
+                                    echo "Error: " . $e->getMessage();
+                                }
+                            }
+                        } else {
+                            echo '<tr><td>0 result</td></tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
+
+            </div>
     </main>
 
 </body>
