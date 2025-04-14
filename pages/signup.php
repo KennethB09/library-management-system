@@ -104,10 +104,13 @@
             );
 
             if ($stmt->execute()) {
-                echo "New record created successfully";
-                session_start();
-                $_SESSION["studentNumber"] = $_POST["studentNumber"];
+
+                setcookie("student", $_POST["studentNumber"], time() + (86400 * 30), "/");
+
+                // Redirect to dashboard
                 header("Location: dashboard.php");
+                exit();
+                
             } else {
                 throw new Exception("Error executing statement: " . $stmt->error);
             }

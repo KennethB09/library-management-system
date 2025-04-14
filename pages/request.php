@@ -172,11 +172,11 @@ $section = $studentRow["section"];
                 <div class="label-input">
                     <label for="returnDate">Choose return date</label>
                     <select name="returnDate" id="returnDate" required>
-                        <option value="1">1 day</option>
-                        <option value="2">2 days</option>
-                        <option value="3">3 days</option>
-                        <option value="4">4 days</option>
-                        <option value="5">5 days</option>
+                        <option value="2">1 day</option>
+                        <option value="3">2 days</option>
+                        <option value="4">3 days</option>
+                        <option value="5">4 days</option>
+                        <option value="6">5 days</option>
                     </select>
                 </div>
                 <div class="request-btn-container">

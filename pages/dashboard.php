@@ -43,7 +43,7 @@ function waitListData($data, $status)
     echo '</tr>';
 }
 
-$getUserInfo = $conn->prepare("SELECT id, studentNumber, firstName, lastName, section, email, course, password FROM users WHERE studentNumber =?");
+$getUserInfo = $conn->prepare("SELECT id, studentNumber, firstName, lastName, section, email, course, password, credential FROM users WHERE studentNumber =?");
 $getUserInfo->bind_param("i", $_COOKIE["student"]);
 $getUserInfo->execute();
 $userInfoResult = $getUserInfo->get_result();
@@ -87,6 +87,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../styles/student-dashboard.css">
     <link rel="stylesheet" type="text/css" href="../styles/main.css">
+    <link rel="icon" type="image/x-icon" href="../assets/logo.png">
     <script>
         if (window.history.replaceState) {
             window.history.replaceState(null, null, window.location.href)
@@ -94,6 +95,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
     </script>
     <script defer src="../js/student-dashboard.js"></script>
     <script src="../js/view-book-pdf.js"></script>
+    <script defer src="../js/subscribe-notification.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.min.js"></script>
     <title>Student | Dashboard</title>
 </head>
@@ -257,7 +259,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                 <div class="user-profile-dialogue-items">
                     <button onclick="clickProfile()"><img src="../assets/person-outline.svg"> Profile</button>
                     <button><img src="../assets/sunny-outline.svg"> Theme</button>
-                    <button><img src="../assets/notifications-off-outline.svg"> Notification</button>
+                    <button onclick="enableNotification()"><img src="../assets/notifications-off-outline.svg"> Notification</button>
                 </div>
                 <button onclick="window.location.href = '../utility/logout.php'">Log-out</button>
             </div>
@@ -343,6 +345,62 @@ $getUserWaitListResult = $getUserWaitList->get_result();
 
                                     $borrowedIn = date("Y-m-d", strtotime($borrowData['borrowedOn']));
                                     $returnOn = date("Y-m-d", strtotime($borrowData['dueDate']));
+
+                                    // SEND NOTIFICATION TO USER IF DUE DATE IS TOMORROW
+                                    $currentDate = date('Y-m-d');
+                                    $checkDate = date('Y-m-d', strtotime($currentDate . " + 1 days"));
+
+                                    if ($checkDate == $returnOn) {
+
+                                        $title = $row['title'];
+
+                                        $url = 'http://localhost/library-management-system/utility/sendUserNotification.php';
+
+                                        $data = [
+                                            'title' => 'Borrowed Book is Due Tomorrow',
+                                            'body' => 'Your borrowed book ' . $title . ' is Due tomorrow.',
+                                            'credential' => $userInfoRow["credential"]
+                                        ];
+
+                                        $ch = curl_init($url);
+                                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                                        curl_setopt($ch, CURLOPT_POST, true);
+                                        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+
+                                        $response = curl_exec($ch);
+                                        $error = curl_error($ch);
+                                        curl_close($ch);
+
+                                        if ($error) {
+                                            echo "cURL Error: $error";
+                                        }
+                                    }
+
+                                    if (date("Y-m-d") > $returnOn) {
+
+                                        $title = $row['title'];
+
+                                        $url = 'http://localhost/library-management-system/utility/sendUserNotification.php';
+
+                                        $data = [
+                                            'title' => 'Borrowed Book is pass the Due Date',
+                                            'body' => 'Your borrowed book ' . $title . ' is already pass the Due Date, you should return in immediately.',
+                                            'credential' => $userInfoRow["credential"]
+                                        ];
+
+                                        $ch = curl_init($url);
+                                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                                        curl_setopt($ch, CURLOPT_POST, true);
+                                        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+
+                                        $response = curl_exec($ch);
+                                        $error = curl_error($ch);
+                                        curl_close($ch);
+
+                                        if ($error) {
+                                            echo "cURL Error: $error";
+                                        }
+                                    }
 
                                     ?>
 

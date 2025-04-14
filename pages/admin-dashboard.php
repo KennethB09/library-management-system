@@ -18,6 +18,7 @@ $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../styles/admin-stylesheet.css">
     <link rel="stylesheet" type="text/css" href="../styles/main.css">
+    <link rel="icon" type="image/x-icon" href="../assets/logo.png">
     <script defer src="../js/admin-home.js"></script>
     <script>
         if (window.history.replaceState) {
@@ -42,6 +43,7 @@ $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
                 <button class="tab-link" id="manageTab" onclick="changeTab(event, 'manage')">Manage</button>
                 <button class="tab-link" id="borrowedTab" onclick="changeTab(event, 'borrowed')">Borrowed</button>
                 <button class="tab-link" id="requestTab" onclick="changeTab(event, 'request')">Request</button>
+                <button class="tab-link" id="broadcastTab" onclick="changeTab(event, 'broadcast')">Broadcast</button>
             </div>
         </div>
 
@@ -59,6 +61,9 @@ $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
         </section>
         <section id="request" class="tab-content">
             <?php require '../components/request.php' ?>
+        </section>
+        <section id="broadcast" class="tab-content">
+            <?php require '../components/broadcast.php' ?>
         </section>
     </main>
 
@@ -86,23 +91,23 @@ $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
             <div class="admin-info-edit-form-container" data-visible="false">
                 <form>
                     <div>
-                        <label for="first-name">first name</label>
-                        <input type="text" id="edit-first-name" name="first-name">
+                        <label for="edit-first-name">first name</label>
+                        <input type="text" id="edit-first-name" name="first-name" autocomplete="true">
                     </div>
                     <div>
-                        <label for="last-name">last name</label>
-                        <input type="text" id="edit-last-name" name="last-name">
+                        <label for="edit-last-name">last name</label>
+                        <input type="text" id="edit-last-name" name="last-name" autocomplete="true">
                     </div>
                     <div>
-                        <label for="new-pass">change password</label>
+                        <label for="edit-new-pass">change password</label>
                         <input type="password" id="edit-new-pass" name="new-pass">
                     </div>
                     <div>
-                        <label for="re-new-pass">re-type new password</label>
+                        <label for="edit-re-new-pass">re-type new password</label>
                         <input type="password" id="edit-re-new-pass" name="re-new-pass">
                     </div>
                     <div>
-                        <label for="old-pass">type old password</label>
+                        <label for="edit-old-pass">type old password</label>
                         <input type="password" id="edit-old-pass" name="old-pass">
                     </div>
                     <div>
@@ -115,11 +120,11 @@ $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
                 <form>
                     <div>
                         <label for="first-name">first name</label>
-                        <input type="text" id="first-name" name="first-name">
+                        <input type="text" id="first-name" name="first-name" autocomplete="true">
                     </div>
                     <div>
                         <label for="last-name">last name</label>
-                        <input type="text" id="last-name" name="last-name">
+                        <input type="text" id="last-name" name="last-name" autocomplete="true">
                     </div>
                     <div>
                         <label for="new-pass">password</label>

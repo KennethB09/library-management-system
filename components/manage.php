@@ -143,24 +143,24 @@ if (isset($_GET['search'])) {
                 </div>
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data" method="post">
                     <div class="input-container title">
-                        <label for="title">Title</label>
-                        <input name="title" placeholder="Enter book title" required />
+                        <label for="add-form-title">Title</label>
+                        <input id="add-form-title" name="title" placeholder="Enter book title" required />
                     </div>
                     <div class="input-container author">
-                        <label for="author">Author</label>
-                        <input name="author" placeholder="Enter book author" required />
+                        <label for="add-form-author">Author</label>
+                        <input id="add-form-author" name="author" placeholder="Enter book author" required />
                     </div>
                     <div class="type-genre-copies-container">
                         <div class="input-container">
-                            <label for="type">Type</label>
-                            <select name="type" required>
+                            <label for="add-form-type">Type</label>
+                            <select id="add-form-type" name="type" required>
                                 <option value="academic">academic</option>
                                 <option value="non-academic">non-academic</option>
                             </select>
                         </div>
                         <div class="input-container">
-                            <label for="genre">Genre</label>
-                            <select name="genre" required>
+                            <label for="add-form-genre">Genre</label>
+                            <select id="add-form-genre" name="genre" required>
                                 <option value="fantasy">fantasy</option>
                                 <option value="sci-fi">sci-fi</option>
                                 <option value="romance">romance</option>
@@ -173,14 +173,14 @@ if (isset($_GET['search'])) {
                             </select>
                         </div>
                         <div class="input-container" id="addFormCopiesInput">
-                            <label for="copies">Copies</label>
-                            <input name="copies" type="number" placeholder="Enter book copies" />
+                            <label for="add-form-copies">Copies</label>
+                            <input id="add-form-copies" name="copies" type="number" placeholder="Enter book copies" />
                         </div>
                     </div>
                     <!--- upload --->
                     <div class="availableIn-ebook-container">
                         <div class="input-container">
-                            <label for="format">Format</label>
+                            <label for="formatAdd">Format</label>
                             <select name="format" id="formatAdd" required>
                                 <option value="physical">physical</option>
                                 <option value="digital">digital</option>
@@ -188,15 +188,15 @@ if (isset($_GET['search'])) {
                             </select>
                         </div>
                         <div class="input-container">
-                            <label for="ebook">PDF</label>
+                            <label for="fileInputAdd">PDF</label>
                             <input type="hidden" name="MAX_FILE_SIZE" value="100000000">
                             <input type="file" id="fileInputAdd" name="ebook" accept=".pdf" disabled>
                         </div>
                     </div>
                     <!--- upload --->
                     <div class="input-container">
-                        <label for="description">Book about</label>
-                        <textarea name="description" class="form-textarea" placeholder="Enter book description" required autocomplete="off"></textarea>
+                        <label for="add-form-description">Book about</label>
+                        <textarea id="add-form-description" name="description" class="form-textarea" placeholder="Enter book description" required autocomplete="off"></textarea>
                     </div>
                     <div class="btn-container">
                         <button type="button" class="cancel ghost-btn" onclick="openAddModal(false)">Cancel</button>
@@ -217,23 +217,23 @@ if (isset($_GET['search'])) {
                 <form onsubmit="updateBook(event)" enctype="multipart/form-data" method="post" id="edit-form">
                     <input id="edit-form-bookId" name="id" hidden />
                     <div class="input-container title">
-                        <label for="title">Title</label>
+                        <label for="edit-form-title">Title</label>
                         <input id="edit-form-title" name="title" placeholder="Enter book title" required />
                     </div>
                     <div class="input-container author">
-                        <label for="author">Author</label>
+                        <label for="edit-form-author">Author</label>
                         <input id="edit-form-author" name="author" placeholder="Enter book author" required />
                     </div>
                     <div class="type-genre-copies-container">
                         <div class="input-container">
-                            <label for="type">Type</label>
+                            <label for="edit-form-type">Type</label>
                             <select id="edit-form-type" name="type" required>
                                 <option value="academic">academic</option>
                                 <option value="non-academic">non-academic</option>
                             </select>
                         </div>
                         <div class="input-container">
-                            <label for="genre">Genre</label>
+                            <label for="edit-form-genre">Genre</label>
                             <select id="edit-form-genre" name="genre" required>
                                 <option value="fantasy">fantasy</option>
                                 <option value="sci-fi">sci-fi</option>
@@ -247,23 +247,23 @@ if (isset($_GET['search'])) {
                             </select>
                         </div>
                         <div class="input-container">
-                            <label for="copies">Copies</label>
+                            <label for="edit-form-copies">Copies</label>
                             <input id="edit-form-copies" name="copies" type="number" placeholder="Enter book copies" required />
                         </div>
                     </div>
                     <div class="availableIn-ebook-container">
                         <div class="input-container">
-                            <label for="format">Format</label>
+                            <label for="formatEdit">Format</label>
                             <input type="text" name="format" id="formatEdit" readonly>
                         </div>
                         <div class="input-container" id="uploadInputContainer">
-                            <label for="ebook">Upload PDF</label>
+                            <label for="fileInputEdit">Upload PDF</label>
                             <input type="hidden" name="MAX_FILE_SIZE" value="100000000">
                             <input type="file" id="fileInputEdit" name="ebook" accept=".pdf" >
                         </div>
                     </div>
                     <div class="input-container">
-                        <label for="description">Book about</label>
+                        <label for="edit-form-des">Book about</label>
                         <textarea id="edit-form-des" class="form-textarea" name="description" placeholder="Enter book description" required></textarea>
                     </div>
                     <div class="btn-container">
@@ -303,7 +303,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $dbname = "lms_db";
 
     try {
-        if (($_POST['format'] === "physical" || $_POST['format'] === "both") &&
+        if ((isset($_POST['format']) && $_POST['format'] === "physical" || $_POST['format'] === "both") &&
             (empty($_POST["copies"]) || (int)$_POST["copies"] <= 0)
         ) {
             throw new Exception("Please add at least one copy for physical books.");
