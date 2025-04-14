@@ -596,6 +596,18 @@ header {
             }
         }
     }
+
+    .table.waitList-table-container {
+        table {
+            thead {
+                th {
+                    width: 25%;
+                    border-bottom: none;
+                }
+    
+            }
+        }
+    }
 }
 
 main {

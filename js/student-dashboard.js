@@ -66,3 +66,20 @@ function toggleMenu() {
         menu.setAttribute("data-visible", "true");
     }
 }
+
+function waitListRemove(event, id) {
+    event.preventDefault();
+
+    let formData = new FormData();
+    formData.append("id", id);
+    fetch("../controllers/wait-list-remove.php", {
+        method: "POST",
+        body: formData
+    })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);
+            location.reload();
+        })
+        .catch(error => console.error(error));
+}

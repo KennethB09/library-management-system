@@ -303,7 +303,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $dbname = "lms_db";
 
     try {
-        if ((isset($_POST['format']) && $_POST['format'] === "physical" || $_POST['format'] === "both") &&
+        if ((isset($_POST['format']) && ($_POST['format'] === "physical" || $_POST['format'] === "both")) &&
             (empty($_POST["copies"]) || (int)$_POST["copies"] <= 0)
         ) {
             throw new Exception("Please add at least one copy for physical books.");

@@ -4,42 +4,12 @@ checkAuth();
 
 require "../utility/dp-connection.php";
 
-function tableData($row, $borrowedIn, $returnOn, $path)
-{
-    if ($path !== "digital") {
-        echo '<tr onClick="viewBook(" $path")">';
-        echo '<td>' . $row['title'] . '</td>';
-        echo '<td>' . $row['genre'] . '</td>';
-        echo '<td>' . $row['type'] . '</td>';
-        echo '<td>' . $borrowedIn . '</td>';
-        echo '<td>' . $returnOn . '</td>';
-        echo '</tr>';
-    } else {
-        echo '<tr>';
-        echo '<td>' . $row['title'] . '</td>';
-        echo '<td>' . $row['genre'] . '</td>';
-        echo '<td>' . $row['type'] . '</td>';
-        echo '<td>' . $borrowedIn . '</td>';
-        echo '<td>' . $returnOn . '</td>';
-        echo '</tr>';
-    }
-}
-
 function tableDataR($bookData, $requestedOn)
 {
     echo '<tr>';
     echo '<td>' . $bookData["title"] . '</td>';
     echo '<td>' . $bookData["genre"] . '</td>';
     echo '<td>' . $requestedOn . '</td>';
-    echo '</tr>';
-}
-
-function waitListData($data, $status)
-{
-    echo '<tr>';
-    echo '<td>' . $data["title"] . '</td>';
-    echo '<td>' . $data["genre"] . '</td>';
-    echo '<td>' . $status . '</td>';
     echo '</tr>';
 }
 
@@ -72,7 +42,7 @@ $getUserRequestedBooks->bind_param("i", $_COOKIE["student"]);
 $getUserRequestedBooks->execute();
 $getUserRequestedBooksResult = $getUserRequestedBooks->get_result();
 
-$getUserWaitList = $conn->prepare("SELECT bookRef FROM waitlist WHERE userId =? ");
+$getUserWaitList = $conn->prepare("SELECT id, bookRef FROM waitlist WHERE userId =? ");
 $getUserWaitList->bind_param("i", $_COOKIE["student"]);
 $getUserWaitList->execute();
 $getUserWaitListResult = $getUserWaitList->get_result();
@@ -440,10 +410,10 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                         <th>requestedOn</th>
                     </thead>
                     <tbody>
-                        <?php
-                        if ($getUserRequestedBooksResult->num_rows > 0) {
-                            while ($requestData = $getUserRequestedBooksResult->fetch_assoc()) {
-                                try {
+                        <?php if ($getUserRequestedBooksResult->num_rows > 0) { ?>
+                            <?php while ($requestData = $getUserRequestedBooksResult->fetch_assoc()) { ?>
+                                <?php try { ?>
+                                    <?php
                                     $requestedOn = $requestData["requestOn"];
 
                                     // Get referenced Book on Book copy
@@ -453,20 +423,27 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                                     $result = $stmt->get_result();
                                     $row = $result->fetch_assoc();
 
-                                    tableDataR($row, $requestedOn);
-                                } catch (Exception $e) {
-                                    echo "Error: " . $e->getMessage();
-                                }
-                            }
-                        } else {
-                            echo '<tr><td>0 result</td></tr>';
-                        }
-                        ?>
+                                    ?>
+
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($row["title"]) ?></td>
+                                        <td><?php echo htmlspecialchars($row["genre"]) ?></td>
+                                        <td><?php echo htmlspecialchars($requestedOn) ?></td>
+                                    </tr>
+
+                                <?php } catch (Exception $e) { ?>
+                                    <?php echo "Error: " . $e->getMessage(); ?>
+                                <?php } ?>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <?php echo '<tr><td>0 result</td></tr>'; ?>
+                        <?php } ?>
+
                     </tbody>
                 </table>
             </div>
 
-            <div class="table" data-visible="false" id="waitListTable">
+            <div class="table waitList-table-container" data-visible="false" id="waitListTable">
                 <table>
                     <thead>
                         <th>Name</th>
@@ -474,11 +451,12 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                         <th>Status</th>
                     </thead>
                     <tbody>
-                        <?php
-                        if ($getUserWaitListResult->num_rows > 0) {
-                            while ($waitListData = $getUserWaitListResult->fetch_assoc()) {
-                                try {
 
+                        <?php if ($getUserWaitListResult->num_rows > 0) { ?>
+                            <?php while ($waitListData = $getUserWaitListResult->fetch_assoc()) { ?>
+                                <?php try { ?>
+
+                                    <?php
                                     $getCopy = $conn->prepare("SELECT bookRef, status FROM books_copy WHERE id = ?");
                                     $getCopy->bind_param("i", $waitListData["bookRef"]);
                                     $getCopy->execute();
@@ -489,16 +467,22 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                                     $stmt->execute();
                                     $result = $stmt->get_result();
                                     $row = $result->fetch_assoc();
+                                    ?>
 
-                                    waitListData($row, $copyData["status"]);
-                                } catch (Exception $e) {
-                                    echo "Error: " . $e->getMessage();
-                                }
-                            }
-                        } else {
-                            echo '<tr><td>0 result</td></tr>';
-                        }
-                        ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($row["title"]) ?></td>
+                                        <td><?php echo htmlspecialchars($row["genre"]) ?></td>
+                                        <td><?php echo htmlspecialchars($copyData["status"]) ?></td>
+                                        <td><button class="cta-btn-secondary" onclick="waitListRemove(event, '<?php echo htmlspecialchars($waitListData['id']) ?>')">Remove</button></td>
+                                    </tr>
+
+                                <?php } catch (Exception $e) { ?>
+                                    <?php echo "Error: " . $e->getMessage(); ?>
+                                <?php } ?>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <?php echo '<tr><td>0 result</td></tr>'; ?>
+                        <?php } ?>
                     </tbody>
                 </table>
 
