@@ -17,7 +17,7 @@
                 <div class="input-container">
                     <label for="studentNumber">Student Number</label>
                     <input type="number" id="studentNumber" name="studentNumber" pattern="[0-9]{10}"
-                        maxlength="10" required>
+                        maxlength="10" minlength="10" required>
                 </div>
 
                 <div class="input-container">

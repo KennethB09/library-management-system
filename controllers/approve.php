@@ -8,7 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $bookRef = $_POST["bookRef"];
     $dueDate = $_POST["dueDate"];
     $borrower = $_POST["borrower"];
-    $borrowedOn = date("Y/m/d");
     $format = $_POST["format"];
 
     try {
@@ -30,14 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $updateCopyStmt->execute();
 
                 // Continue with your borrowing process using $availableCopyId
-                $approveBookStmt = $conn->prepare("INSERT INTO borrowed_books (bookRef, borrowedOn, dueDate, borrower) VALUES (?, ?, ?, ?)");
+                $approveBookStmt = $conn->prepare("INSERT INTO borrowed_books (bookRef, dueDate, borrower) VALUES (?, ?, ?)");
                 if (!$approveBookStmt) {
                     throw new Exception("Prepare failed: " . $conn->error);
                 }
                 $approveBookStmt->bind_param(
-                    "ssss",
+                    "sss",
                     $availableCopyId,
-                    $borrowedOn,
                     $dueDate,
                     $borrower
                 );
@@ -71,14 +69,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $availableCopyId = $row['id'];
 
                 // Continue with your borrowing process using $availableCopyId
-                $approveBookStmt = $conn->prepare("INSERT INTO borrowed_books (bookRef, borrowedOn, dueDate, borrower) VALUES (?, ?, ?, ?)");
+                $approveBookStmt = $conn->prepare("INSERT INTO borrowed_books (bookRef, dueDate, borrower) VALUES (?, ?, ?)");
                 if (!$approveBookStmt) {
                     throw new Exception("Prepare failed: " . $conn->error);
                 }
                 $approveBookStmt->bind_param(
-                    "ssss",
+                    "sss",
                     $availableCopyId,
-                    $borrowedOn,
                     $dueDate,
                     $borrower
                 );

@@ -20,7 +20,7 @@ if (isset($_COOKIE["student"])) {
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <div class="input-container">
                     <label for="studentNumber">Student Number</label>
-                    <input type="number" id="studentNumber" name="studentNumber" required>
+                    <input type="number" id="studentNumber" name="studentNumber" minlength="10" maxlength="10" required>
                 </div>
                 <div class="input-container">
                     <label for="password">Password</label>

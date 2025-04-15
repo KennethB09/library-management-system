@@ -379,8 +379,8 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                                             <td><?php echo htmlspecialchars($row['title']); ?></td>
                                             <td><?php echo htmlspecialchars($row['genre']); ?></td>
                                             <td><?php echo htmlspecialchars($row['type']); ?></td>
-                                            <td><?php echo htmlspecialchars($borrowedIn); ?></td>
-                                            <td><?php echo htmlspecialchars($returnOn); ?></td>
+                                            <td><?php echo htmlspecialchars(date("Y-m-d h:i:s A", strtotime($borrowData['borrowedOn']))); ?></td>
+                                            <td><?php echo htmlspecialchars(date("Y-m-d h:i:s A", strtotime($borrowData['dueDate']))); ?></td>
                                         </tr>
                                     <?php } else { ?>
                                         <tr>
@@ -407,14 +407,14 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                     <thead>
                         <th>Name</th>
                         <th>Genre</th>
-                        <th>requestedOn</th>
+                        <th>Requested On</th>
                     </thead>
                     <tbody>
                         <?php if ($getUserRequestedBooksResult->num_rows > 0) { ?>
                             <?php while ($requestData = $getUserRequestedBooksResult->fetch_assoc()) { ?>
                                 <?php try { ?>
                                     <?php
-                                    $requestedOn = $requestData["requestOn"];
+                                    $requestedOn = date("Y-m-d h:i:s A", strtotime($requestData['requestOn']));
 
                                     // Get referenced Book on Book copy
                                     $stmt = $conn->prepare("SELECT title, genre, type FROM books WHERE id = ?");

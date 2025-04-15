@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["returnDate"])) {
             throw new Exception("Connection failed: " . $conn->connect_error);
         }
 
-        $requestBookStmt = $conn->prepare("INSERT INTO request_books (bookRef, requestOn, requesterId, dueDate) VALUES (?, ?, ?, ?)");
+        $requestBookStmt = $conn->prepare("INSERT INTO request_books (bookRef, requesterId, dueDate) VALUES (?, ?, ?)");
 
         if (!$requestBookStmt) {
             throw new Exception("Prepare failed: " . $conn->error);
@@ -26,15 +26,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["returnDate"])) {
         $bookId = $_POST["bookId"];
         $studentNumber = $_COOKIE["student"];
         $days = (int)$_POST["returnDate"];
+        $time = $_POST["returnTime"];
+        $format = $_POST["format"];
 
-        // Calculate the return date (current date + selected days)
-        $currentDate = date('Y-m-d');
-        $returnDate = date('Y-m-d', strtotime($currentDate . " + $days days"));
+        date_default_timezone_set("Asia/Manila");
+
+        if ($format === "digital") {
+            $returnDate = date('Y-m-d', strtotime("+$days days")) . " " . $time . ":00";
+        } else {
+            $returnDate = date('Y-m-d', strtotime("+$days days"));
+        }
 
         $requestBookStmt->bind_param(
-            "ssss",
+            "sss",
             $bookId,
-            date("Y/m/d"),  // Use direct value instead of $_POST["requestOn"]
             $studentNumber,
             $returnDate
         );
@@ -59,7 +64,7 @@ if (!$selectedBookId) {
 }
 
 // Fetch book details
-$selectedBookStmt = $conn->prepare("SELECT id, title, type, genre, description, author FROM books WHERE id = ?");
+$selectedBookStmt = $conn->prepare("SELECT id, title, type, genre, description, author, format FROM books WHERE id = ?");
 $selectedBookStmt->bind_param("i", $selectedBookId);
 $selectedBookStmt->execute();
 
@@ -170,14 +175,20 @@ $section = $studentRow["section"];
                     <p class="input"><?php echo $studentNumber; ?></p>
                 </div>
                 <div class="label-input">
-                    <label for="returnDate">Choose return date</label>
-                    <select name="returnDate" id="returnDate" required>
-                        <option value="2">1 day</option>
-                        <option value="3">2 days</option>
-                        <option value="4">3 days</option>
-                        <option value="5">4 days</option>
-                        <option value="6">5 days</option>
-                    </select>
+                    <label for="returnDate">Choose the Day of Return</label>
+                    <div>
+                        <select name="returnDate" id="returnDate" required>
+                            <option value="2">1 day</option>
+                            <option value="3">2 days</option>
+                            <option value="4">3 days</option>
+                            <option value="5">4 days</option>
+                            <option value="6">5 days</option>
+                        </select>
+                        <?php if ($selectedBookResult["format"] === "digital") { ?>
+                            <input type="hidden" name="format" value="<?php echo $selectedBookResult["format"] ?>" readonly>
+                            <input class="input-style" type="time" name="returnTime">
+                        <?php } ?>
+                    </div>
                 </div>
                 <div class="request-btn-container">
                     <button type="button" class="ghost-btn" onclick="window.location.href = '../pages/search-book.php'">cancel</button>
@@ -187,4 +198,5 @@ $section = $studentRow["section"];
         </form>
     </div>
 </body>
+
 </html>

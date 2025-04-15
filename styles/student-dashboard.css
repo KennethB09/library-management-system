@@ -579,7 +579,7 @@ header {
                     td {
                         color: var(--gray);
                         padding: 15px 0;
-
+                        text-transform: capitalize;
                     }
                 }
 

@@ -90,8 +90,9 @@ if (isset($_GET['search'])) {
                                     $bookTitleStmt->bind_param("s", $row['bookRef']);
                                     $bookTitleStmt->execute();
                                     $title = $bookTitleStmt->get_result()->fetch_assoc();
-                                    $requestedOn = date("Y-m-d", strtotime($row['requestOn']));
-                                    $dueDate = date("Y-m-d", strtotime($row['dueDate']));
+
+                                    $requestedOn = date("Y-m-d h:i:s A", strtotime($row['requestOn']));
+                                    $dueDate = date("Y-m-d h:i:s A", strtotime($row['dueDate']));
                                     ?>
                                     <tr class="table-row">
                                         <td><?= htmlspecialchars($row['id']) ?></td>
