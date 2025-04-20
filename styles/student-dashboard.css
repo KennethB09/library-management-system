@@ -71,6 +71,7 @@ header {
                     }
 
                 }
+
                 button:hover {
                     background-color: var(--bg-color);
                 }
@@ -382,6 +383,100 @@ header {
     }
 }
 
+.dashboard-notification-main-container {
+    display: none;
+    animation-name: fadeIn;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-in-out;
+}
+
+.dashboard-notification-main-container[data-visible="true"] {
+    display: block;
+    position: absolute;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--modal-bg);
+
+    .dashboard-notification-container {
+        width: 60%;
+        height: 60%;
+        border-radius: 10px;
+        padding: 1rem;
+        background-color: var(--bg-white);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .dashboard-notification-title-container {
+            display: inherit;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 1rem;
+
+            h1 {
+                font-size: var(--fontSize-md);
+                font-weight: var(--fontWSemi);
+                color: var(--gray);
+            }
+
+            button {
+                border: none;
+                background-color: transparent;
+                display: inherit;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+
+                img {
+                    filter: var(--icon-clr);
+                    width: 25px;
+                    height: 25px;
+                }
+            }
+        }
+
+        .dashboard-notification {
+            display: inherit;
+            flex-direction: inherit;
+            height: 100%;
+            overflow-x: scroll;
+
+            .dashboard-notification-content {
+                border-bottom: 1px solid var(--gray);
+                display: flex;
+                flex-direction: column;
+                padding: .3rem;
+                gap: .5rem;
+
+                h1 {
+                    font-size: var(--fontSize-sm);
+                    font-weight: var(--fontWSemi);
+                    color: var(--gray);
+                    margin-bottom: .3rem;
+                }
+
+                p {
+                    font-size: var(--fontSize-sm);
+                    font-weight: var(--fontWRegular);
+                    color: var(--gray);
+                }
+
+                span {
+                    font-size: var(--fontSize-sm);
+                    font-weight: var(--fontWSemi);
+                    color: var(--gray);
+                }
+            }
+        }
+    }
+}
+
 .section-1-container {
     display: flex;
     justify-content: space-between;
@@ -604,7 +699,7 @@ header {
                     width: 25%;
                     border-bottom: none;
                 }
-    
+
             }
         }
     }

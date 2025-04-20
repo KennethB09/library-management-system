@@ -1,4 +1,12 @@
+const notificationIcon = document.getElementById("notificationIcon");
 navigator.serviceWorker.register("../sw.js");
+
+if (Notification.permission === "granted") {
+
+    notificationIcon.src = "../assets/notifications-outline.svg";
+} else {
+    notificationIcon.src = "../assets/notifications-off-outline.svg";
+}
 
 function enableNotification() {
     console.log("hi")

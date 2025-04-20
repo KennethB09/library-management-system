@@ -31,6 +31,17 @@ function switchTable(table) {
     }
 };
 
+function toggleModal(container) {
+    const modal = document.getElementById(container);
+    const modalVisible = modal.getAttribute("data-visible");
+
+    if (modalVisible === "true") {
+        modal.setAttribute("data-visible", "false");
+    } else {
+        modal.setAttribute("data-visible", "true");
+    }
+}
+
 function clickProfile() {
     const modal = document.querySelector(".user-profile-modal-container");
     const modalVisible = modal.getAttribute("data-visible");

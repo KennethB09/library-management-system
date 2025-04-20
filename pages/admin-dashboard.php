@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../utility/admin-auth.php';
 checkAdminAuth();
 
@@ -8,6 +9,10 @@ $adminInfoStmt = $conn->prepare("SELECT * FROM admin WHERE id = ?");
 $adminInfoStmt->bind_param("i", $_COOKIE["admin"]);
 $adminInfoStmt->execute();
 $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
+
+$errorMsg = "";
+
+$fNameErr = $lNameErr = $newPassErr = $reNewPassErr = $oldPassErr = "";
 
 ?>
 <!DOCTYPE html>
@@ -19,7 +24,6 @@ $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
     <link rel="stylesheet" type="text/css" href="../styles/admin-stylesheet.css">
     <link rel="stylesheet" type="text/css" href="../styles/main.css">
     <link rel="icon" type="image/x-icon" href="../assets/logo.png">
-    <script defer src="../js/admin-home.js"></script>
     <script>
         if (window.history.replaceState) {
             window.history.replaceState(null, null, window.location.href)
@@ -30,9 +34,19 @@ $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
 </head>
 
 <body class="admin-dashboard">
+
+    <!-- CUSTOM ALERT -->
+    <?php if (isset($_SESSION['alert'])) { ?>
+        <div class="alert alert-<?php echo $_SESSION['alert']['type']; ?>" id="alert" role="alert">
+            <p><?php echo $_SESSION['alert']['message']; ?></p>
+            <button onclick="alertDismiss()"><img src="../assets/close.svg"></button>
+        </div>
+        <?php unset($_SESSION['alert']); ?>
+    <?php } ?>
+
     <nav class="admin-nav">
 
-        <button class="admin-account-btn" onclick="onToggleAdminInfo()">
+        <button class="admin-account-btn" onclick="toggleModal('adminInfoMainContainer')">
             <span class="admin-account-btn-span">Admin</span>
             <span><?php echo $adminInfo["firstName"], " ", $adminInfo["lastName"] ?></span>
         </button>
@@ -47,7 +61,7 @@ $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
             </div>
         </div>
 
-        <button class="admin-logout-btn ghost-btn" onclick="onToggleLogout()">Log-out</button>
+        <button class="admin-logout-btn ghost-btn" onclick="toggleModal('adminLogoutModalContainer')">Log-out</button>
     </nav>
     <main>
         <section id="home" class="tab-content">
@@ -68,17 +82,18 @@ $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
     </main>
 
     <!-- ADMIN INFO MODAL -->
-    <div class="admin-info-main-container" data-visible="false">
+    <div class="admin-info-main-container" id="adminInfoMainContainer" data-visible="false">
         <div class="admin-info-container">
             <div class="admin-info-header">
                 <h1>admin profile</h1>
-                <button onclick="onToggleAdminInfo()"><img src="../assets/close.svg"></button>
+                <button onclick="toggleModal('adminInfoMainContainer')"><img src="../assets/close.svg"></button>
             </div>
             <div class="admin-info-edit-btn-container">
-                <button><img src="../assets/pencil.svg"></button>
-                <button><img src="../assets/person-add.svg"></button>
+                <button onclick="showForm('adminInfoContent', 'adminInfoEditFormContainer', 'adminInfoNewAdminFormContainer')"><img src="../assets/pencil.svg"> Edit Information</button>
+                <button onclick="showForm('adminInfoContent', 'adminInfoNewAdminFormContainer', 'adminInfoEditFormContainer')"><img src="../assets/person-add.svg"> Add New Admin</button>
             </div>
-            <div class="admin-info-content" data-visible="true">
+            <div class="admin-info-content" id="adminInfoContent" data-visible="true">
+                <h1>Current Logged-in</h1>
                 <div class="admin-first-name-container">
                     <span class="admin-first-name-label">first name</span>
                     <span class="admin-first-name"><?php echo $adminInfo["firstName"] ?></span>
@@ -88,66 +103,132 @@ $adminInfo = $adminInfoStmt->get_result()->fetch_assoc();
                     <span class="admin-last-name"><?php echo $adminInfo["lastName"] ?></span>
                 </div>
             </div>
-            <div class="admin-info-edit-form-container" data-visible="false">
-                <form>
-                    <div>
-                        <label for="edit-first-name">first name</label>
-                        <input type="text" id="edit-first-name" name="first-name" autocomplete="true">
+            <div class="admin-info-edit-form-container" id="adminInfoEditFormContainer" data-visible="false">
+
+                <form id="adminUpdateInfo" method="post">
+                    <div class="input-container">
+                        <label for="edit-first-name">First Name</label>
+                        <input class="input-style" type="text" id="edit-first-name" name="first-name" value="<?php echo htmlspecialchars($adminInfo['firstName']) ?>" required minlength="2">
+                        <span class="error"><?php echo $fNameErr ?></span>
                     </div>
-                    <div>
-                        <label for="edit-last-name">last name</label>
-                        <input type="text" id="edit-last-name" name="last-name" autocomplete="true">
+                    <div class="input-container">
+                        <label for="edit-last-name">Last Name</label>
+                        <input class="input-style" type="text" id="edit-last-name" name="last-name" value="<?php echo htmlspecialchars($adminInfo['lastName']) ?>" required minlength="2">
+                        <span class="error"><?php echo $lNameErr ?></span>
                     </div>
-                    <div>
-                        <label for="edit-new-pass">change password</label>
-                        <input type="password" id="edit-new-pass" name="new-pass">
+                    <div class="input-container">
+                        <label for="edit-new-pass">Change Password</label>
+                        <input class="input-style" type="password" id="edit-new-pass" name="new-pass" minlength="8">
+                        <span class="error"><?php echo $newPassErr ?></span>
                     </div>
-                    <div>
-                        <label for="edit-re-new-pass">re-type new password</label>
-                        <input type="password" id="edit-re-new-pass" name="re-new-pass">
+                    <div class="input-container">
+                        <label for="edit-re-new-pass">Re-type New Password</label>
+                        <input class="input-style" type="password" id="edit-re-new-pass" name="re-new-pass">
+                        <span class="error"><?php echo $reNewPassErr ?></span>
                     </div>
-                    <div>
-                        <label for="edit-old-pass">type old password</label>
-                        <input type="password" id="edit-old-pass" name="old-pass">
+                    <div class="input-container">
+                        <label for="edit-old-pass">Type Old Password</label>
+                        <input class="input-style" type="password" id="edit-old-pass" name="old-pass">
+                        <span class="error"><?php echo $oldPassErr ?></span>
                     </div>
-                    <div>
-                        <button type="button">cancel</button>
-                        <button type="submit">save</button>
+                    <div class="btn-container">
+                        <button class="ghost-btn" type="button" onclick="showForm('adminInfoContent', 'adminInfoEditFormContainer', 'adminInfoNewAdminFormContainer')">Cancel</button>
+                        <button class="cta-btn-primary" type="submit" name="editAdmin">Save</button>
                     </div>
                 </form>
             </div>
-            <div class="admin-info-new-admin-form-container" data-visible="false">
-                <form>
-                    <div>
-                        <label for="first-name">first name</label>
-                        <input type="text" id="first-name" name="first-name" autocomplete="true">
+            <div class="admin-info-new-admin-form-container" id="adminInfoNewAdminFormContainer" data-visible="false">
+                <?php
+                if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["newAdmin"])) {
+                    // After form processing, store alert in session
+
+                    try {
+                        require "../utility/dp-connection.php";
+
+                        // Retrieve form inputs
+                        $firstName = trim($_POST["first-name"]);
+                        $lastName = trim($_POST["last-name"]);
+                        $email = trim($_POST["email"]);
+                        $password = $_POST["new-pass"];
+
+                        // Validate inputs
+                        if (empty($firstName)) {
+                            throw new Exception("First name is required.");
+                        }
+                        if (empty($lastName)) {
+                            throw new Exception("Last name is required.");
+                        }
+                        if (empty($email)) {
+                            throw new Exception("Email is required.");
+                        }
+                        if (strlen($password) < 8) {
+                            throw new Exception("Password must be at least 8 characters long.");
+                        }
+
+                        // Hash the password
+                        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+                        // Insert new admin into the database
+                        $insertAdminStmt = $conn->prepare("INSERT INTO admin (firstName, lastName, email, password) VALUES (?, ?, ?, ?)");
+                        if (!$insertAdminStmt) {
+                            throw new Exception("Prepare failed: " . $conn->error);
+                        }
+                        $insertAdminStmt->bind_param("ssss", $firstName, $lastName, $email, $hashedPassword);
+
+                        if ($insertAdminStmt->execute()) {
+                            $_SESSION['alert'] = [
+                                'type' => 'success',
+                                'message' => 'Form submitted successfully!'
+                            ];
+                        } else {
+                            throw new Exception("Failed to add new admin.");
+                            $_SESSION['alert'] = [
+                                'type' => 'danger',
+                                'message' => 'Form not submitted!'
+                            ];
+                        }
+
+                        $insertAdminStmt->close();
+                    } catch (Exception $e) {
+                        echo "<p class='error'>" . $e->getMessage() . "</p>";
+                    }
+                }
+                ?>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                    <div class="input-container">
+                        <label for="first-name">First Name</label>
+                        <input class="input-style" type="text" id="first-name" name="first-name" autocomplete="true" required>
                     </div>
-                    <div>
-                        <label for="last-name">last name</label>
-                        <input type="text" id="last-name" name="last-name" autocomplete="true">
+                    <div class="input-container">
+                        <label for="last-name">Last Name</label>
+                        <input class="input-style" type="text" id="last-name" name="last-name" autocomplete="true" required>
                     </div>
-                    <div>
-                        <label for="new-pass">password</label>
-                        <input type="password" id="new-pass" name="new-pass">
+                    <div class="input-container">
+                        <label for="last-name">Email</label>
+                        <input class="input-style" type="email" id="email" name="email" autocomplete="true" required>
                     </div>
-                    <div>
-                        <button type="button">cancel</button>
-                        <button type="submit">save</button>
+                    <div class="input-container">
+                        <label for="new-pass">Password</label>
+                        <input class="input-style" type="password" id="new-pass" name="new-pass" minlength="8" required>
+                    </div>
+                    <div class="btn-container">
+                        <button class="ghost-btn" type="button" onclick="showForm('adminInfoContent', 'adminInfoNewAdminFormContainer', 'adminInfoEditFormContainer')">Cancel</button>
+                        <button class="cta-btn-primary" type="submit" name="newAdmin">Save</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
     <!-- ADMIN LOGOUT MODAL -->
-    <div class="admin-logout-modal-container" data-visible="false">
+    <div class="admin-logout-modal-container" id="adminLogoutModalContainer" data-visible="false">
         <div class="admin-logout-modal">
             <div class="admin-logout-modal-header">
                 <h1>logout</h1>
-                <button onclick="onToggleLogout()"><img src="../assets/close.svg"></button>
+                <button onclick="toggleModal('adminLogoutModalContainer')"><img src="../assets/close.svg"></button>
             </div>
             <p>are you sure you want to log-out?</p>
             <div class="admin-logout-modal-btn-container">
-                <button class="ghost-btn" onclick="onToggleLogout()">no</button>
+                <button class="ghost-btn" onclick="toggleModal('adminLogoutModalContainer')">no</button>
                 <button class="cta-btn-primary" onclick="window.location.href = '../utility/admin-logout.php'">yes</button>
             </div>
         </div>

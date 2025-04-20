@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require "../utility/dp-connection.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -20,7 +20,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         );
 
         $deleteRequestStmt->execute();
-        echo "Request declined successfully!";
+        $_SESSION['alert'] = [
+            'type' => 'success',
+            'message' => "Request declined"
+        ];
 
         $conn->close();
     } catch (Exception $e) {

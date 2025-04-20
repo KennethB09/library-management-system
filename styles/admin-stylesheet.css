@@ -1,5 +1,71 @@
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
 .admin-dashboard {
     background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+
+    .alert {
+        position: absolute;
+        align-self: center;
+        margin-top: 1rem;
+        width: 50%;
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 10px;
+        padding: .5rem 1rem;
+        animation-name: fadeIn;
+        animation-duration: 0.3s;
+        animation-timing-function: ease-in-out;
+
+        p {
+            font-size: var(--fontSize-sm);
+            font-weight: var(--fontWRegular);
+            color: var(--bg-white);
+        }
+
+        button {
+            background-color: transparent;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            img {
+                filter: invert(100%) sepia(6%) saturate(189%) hue-rotate(316deg) brightness(113%) contrast(89%);
+                width: 25px;
+                height: 25px;
+            }
+        }
+    }
+
+    .alert.alert-success {
+        background-color: #41c12d;
+        transition: 500ms ease-in-out;
+    }
+
+    .alert.alert-warning {
+        background-color: #f08e13;
+    }
+
+    .alert.alert-danger {
+        background-color: #d01f1f;
+    }
+
+    .alert.alert-info {
+        background-color: #1e33d0;
+    }
 
     .admin-nav {
         display: flex;
@@ -82,7 +148,7 @@
             .admin-info-header {
                 display: flex;
                 justify-content: space-between;
-                margin-bottom: 1rem;
+                margin-bottom: 2rem;
 
                 h1 {
                     font-weight: var(--fontWBold);
@@ -109,12 +175,24 @@
         }
 
         .admin-info-content {
+            display: none;
+        }
+
+        .admin-info-content[data-visible="true"] {
+            display: block;
             display: flex;
             justify-content: space-between;
+
+            h1 {
+                font-size: var(--fontSize-sm);
+                font-weight: var(--fontWSemi);
+                color: var(--gray);
+            }
 
             .admin-first-name-container {
                 display: flex;
                 flex-direction: column;
+
 
                 .admin-first-name-label {
                     font-weight: var(--fontWSemi);
@@ -124,7 +202,7 @@
                 }
 
                 .admin-first-name {
-                    font-weight: var(--fontWSemi);
+                    font-weight: var(--fontWRegular);
                     font-size: var(--fontSize-sm);
                     color: var(--gray);
                 }
@@ -142,7 +220,7 @@
                 }
 
                 .admin-last-name {
-                    font-weight: var(--fontWSemi);
+                    font-weight: var(--fontWRegular);
                     font-size: var(--fontSize-sm);
                     color: var(--gray);
                 }
@@ -153,13 +231,20 @@
         .admin-info-edit-btn-container {
             display: flex;
             justify-content: start;
-            gap: 1rem;
+            gap: 2rem;
             margin-bottom: 1rem;
 
             button {
+                display: inherit;
+                justify-content: space-between;
+                align-items: center;
+                gap: .5rem;
                 cursor: pointer;
                 background-color: transparent;
                 border: none;
+                color: var(--blue);
+                font-weight: var(--fontWRegular);
+                font-size: var(--fontSize-sm);
 
                 img {
                     width: 20px;
@@ -173,6 +258,43 @@
             display: none;
         }
 
+        .admin-info-edit-form-container[data-visible="true"],
+        .admin-info-new-admin-form-container[data-visible="true"] {
+            display: block;
+
+            form {
+                display: flex;
+                flex-direction: column;
+                gap: .5rem;
+
+                .input-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: .3rem;
+                    text-transform: capitalize;
+
+                    label {
+                        font-weight: var(--fontWSemi);
+                        font-size: var(--fontSize-sm);
+                        color: var(--gray);
+                    }
+
+                    .error {
+                        font-size: var(--fontSize-sm);
+                        font-weight: var(--fontWSemi);
+                        color: var(--red);
+                    }
+                }
+
+                .btn-container {
+                    display: flex;
+                    justify-content: end;
+                    margin-top: 1rem;
+                    gap: .5rem;
+                }
+            }
+        }
+
         .admin-info-new-admin-form-container {
             display: none;
         }
@@ -183,7 +305,7 @@
         position: absolute;
     }
 
-    .admin-logout-modal-container[data-visible = "true"] {
+    .admin-logout-modal-container[data-visible="true"] {
         display: block;
         position: absolute;
         display: flex;

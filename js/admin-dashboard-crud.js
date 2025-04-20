@@ -106,13 +106,12 @@ function updateBook(event) {
 
     let formData = new FormData(document.getElementById("edit-form"));
 
-    fetch("../utility/admin-update-book.php", {
+    fetch("../controllers/admin-update-book.php", {
         method: "POST",
         body: formData
     })
         .then(response => response.text())
         .then(data => {
-            alert(data);
             openEditModal(false)
             location.reload();
         })
@@ -125,13 +124,12 @@ function deleteBook(event) {
     let formData = new FormData();
     formData.append("bookId", selectedBook);
     formData.append("format", selectedBookAvailableOn);
-    fetch("../utility/admin-delete-book.php", {
+    fetch("../controllers/admin-delete-book.php", {
         method: "POST",
         body: formData
     })
         .then(response => response.text())
         .then(data => {
-            alert(data);
             openDeleteModal(false)
             location.reload();
         })

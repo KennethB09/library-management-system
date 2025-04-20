@@ -27,6 +27,7 @@
                 </form>
 
                 <?php
+                
                 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["sendToAll"])) {
                     try {
                         $server = "localhost";
@@ -40,49 +41,46 @@
                             throw new Exception("Connection failed: " . $conn->connect_error);
                         }
 
-                        // Fetch all users - we'll filter out empty credentials in PHP
-                        $findUserStmt = $conn->prepare("SELECT credential FROM users");
+                        // Fetch all users with credentials
+                        $findUserStmt = $conn->prepare("SELECT studentNumber, credential FROM users WHERE TRIM(credential) != ''");
                         $findUserStmt->execute();
                         $result = $findUserStmt->get_result();
+
+                        $users = [];
+                        while ($row = $result->fetch_assoc()) {
+                            $users[] = $row;
+                        }
 
                         $title = $_POST['title'];
                         $body = $_POST['body'];
 
-                        $url = 'http://localhost/library-management-system/utility/sendUserNotification.php';
-                        $sentCount = 0;
+                        $url = 'http://localhost/library-management-system/utility/sendUsersNotification.php';
 
-                        // Process each user
-                        while ($row = $result->fetch_assoc()) {
-                            // Check if credential is not empty (check for empty string or just whitespace)
-                            if (!empty(trim($row["credential"]))) {
-                                $data = [
-                                    'title' => $title,
-                                    'body' => $body,
-                                    'credential' => $row["credential"]
-                                ];
+                        $data = [
+                            'title' => $title,
+                            'body' => $body,
+                            'users' => json_encode($users), // Pass the user list as JSON
+                        ];
 
-                                $ch = curl_init($url);
-                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                                curl_setopt($ch, CURLOPT_POST, true);
-                                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                        $ch = curl_init($url);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_POST, true);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
 
-                                $response = curl_exec($ch);
-                                $error = curl_error($ch);
-                                curl_close($ch);
+                        $response = curl_exec($ch);
+                        $error = curl_error($ch);
+                        curl_close($ch);
 
-                                if ($error) {
-                                    echo "cURL Error: $error<br>";
-                                } else {
-                                    $sentCount++;
-                                }
-                            }
+                        if ($error) {
+                            echo "cURL Error: $error";
+                        } else {
+                            echo $response; // Display the result from sendUsersNotification.php
                         }
-
-                        echo "Notifications sent successfully to $sentCount users with valid credentials.";
                     } catch (Exception $e) {
                         echo "Error: " . $e->getMessage();
                     }
                 }
+
                 ?>
 
             </div>
@@ -146,6 +144,17 @@
                             echo "cURL Error: $error";
                             throw new Exception("cURL Error: " . $error);
                         }
+
+                        $storeNotifications = $conn->prepare("INSERT INTO notifications (studentNumber, title, content) VALUES (?, ?, ?)");
+                        $storeNotifications->bind_param(
+                            "sss",
+                            $_POST["studentNum"],
+                            $title,
+                            $body
+                        );
+
+                        $storeNotifications->execute();
+                        $storeNotifications->close();
                     } catch (Exception $e) {
                         echo "Error: " . $e->getMessage();
                     }

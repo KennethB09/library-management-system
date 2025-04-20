@@ -1,8 +1,61 @@
 <?php
-
+session_start();
 require "../utility/dp-connection.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    function notifyUser($conn, $studentNumber)
+    {
+        $findUserStmt = $conn->prepare("SELECT firstName, credential FROM users WHERE studentNumber = ?");
+        $findUserStmt->bind_param("i", $studentNumber);
+        $findUserStmt->execute();
+        $result = $findUserStmt->get_result()->fetch_assoc();
+
+        $credential = isset($result["credential"]) ? $result["credential"] : null;
+
+        if ($credential != null) {
+            $title = "Librarian Approve your request!";
+            $body = $result["firstName"] . ", librarian approved your borrow request. Come pick up your book or start reading it now on your student dashboard if it's a digital copy.";
+
+            $url = 'http://localhost/library-management-system/utility/sendUserNotification.php';
+
+            $data = [
+                'title' => $title,
+                'body' => $body,
+                'credential' => $credential
+            ];
+
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+
+            $response = curl_exec($ch);
+            $error = curl_error($ch);
+            curl_close($ch);
+
+            if ($error) {
+                throw new Exception("cURL Error: " . $error);
+            }
+
+            $storeNotifications = $conn->prepare("INSERT INTO notifications (studentNumber, title, content) VALUES (?, ?, ?)");
+            if (!$storeNotifications) {
+                throw new Exception("Prepare failed: " . $conn->error);
+            }
+            $storeNotifications->bind_param(
+                "sss",
+                $studentNumber,
+                $title,
+                $body
+            );
+            $storeNotifications->execute();
+            $storeNotifications->close();
+
+            return "Student " . $result["firstName"] . " with the ID " . $studentNumber . ", successfully notified.";
+        } else {
+            return "Student " . $result["firstName"] . " with the ID " . $studentNumber . ", request approved but the student is not subscribe to notifications.";
+        }
+    }
 
     $requestId = $_POST["requestId"];
     $bookRef = $_POST["bookRef"];
@@ -53,7 +106,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 );
                 $deleteRequestStmt->execute();
 
-                echo "Request Approved successfully!";
+                notifyUser($conn, $borrower);
+
+                $_SESSION['alert'] = [
+                    'type' => 'success',
+                    'message' => 'Request Approved and notified the user'
+                ];
             } else {
                 throw new Exception("No available copies found for this book");
             }
@@ -93,15 +151,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 );
                 $deleteRequestStmt->execute();
 
-                echo "Request Approved successfully!";
+                notifyUser($conn, $borrower);
+
+                $_SESSION['alert'] = [
+                    'type' => 'success',
+                    'message' => 'Request Approved and notified the user'
+                ];
             } else {
                 throw new Exception("No available copies found for this book");
             }
         }
 
-
         $conn->close();
     } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
+        $_SESSION['alert'] = [
+            'type' => 'danger',
+            'message' => 'Error: ' . $e->getMessage()
+        ];
     }
 }

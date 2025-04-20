@@ -14,30 +14,64 @@ $bookStmt->execute();
 
 $bookResult = $bookStmt->get_result();
 
+$countBorrowedBooks = $conn->prepare("SELECT COUNT(*) as total FROM borrowed_books WHERE borrower = ?");
+$countBorrowedBooks->bind_param("i", $_COOKIE["student"]);
+$countBorrowedBooks->execute();
+$countBorrowedBooksResult = $countBorrowedBooks->get_result();
+$countBorrowedBooksRow = $countBorrowedBooksResult->fetch_assoc();
+
 if (isset($_GET['search'])) {
     $searchParam = isset($_GET['search']) ? $_GET['search'] : '';
+    $typeParam = "";
+
+    if (isset($_GET['type'])) {
+        $typeParam = $_GET['type'];
+    }
 
     if ($searchParam !== "") {
-        if (isset($_GET['type'])) {
-            $typeParam = $_GET['type'];
-            echo $typeParam;
+
+        if ($typeParam == "all") {
+
+            $stmtSearch = $conn->prepare("SELECT * FROM books WHERE title LIKE ?");
+            $stmtSearch->bind_param("s", $searchParam);
+            $stmtSearch->execute();
+            $resultSearch = $stmtSearch->get_result();
+
+            if ($resultSearch->num_rows === 0) {
+                $noResult = "No " . $searchParam . " book found.";
+                $result = $bookResult;
+            } else {
+                $result = $resultSearch;
+            }
+
         } else {
-            $filterType = 'academic';
+
+            $stmtSearch = $conn->prepare("SELECT * FROM books WHERE title LIKE ? AND type = ?");
+            $stmtSearch->bind_param("ss", $searchParam, $typeParam);
+            $stmtSearch->execute();
+            $resultSearch = $stmtSearch->get_result();
+    
+            if ($resultSearch->num_rows === 0) {
+                $noResult = "No " . $searchParam . " book found in " .  $typeParam;
+                $result = $bookResult;
+            } else {
+                $result = $resultSearch;
+            }
         }
 
-        $stmtSearch = $conn->prepare("SELECT * FROM books WHERE title LIKE ? AND type = ?");
-        $stmtSearch->bind_param("ss", $searchParam, $typeParam);
+    } else if ($searchParam == "" && ($typeParam != "all")) {
+
+        $stmtSearch = $conn->prepare("SELECT * FROM books WHERE type = ?");
+        $stmtSearch->bind_param("s", $typeParam);
         $stmtSearch->execute();
         $resultSearch = $stmtSearch->get_result();
 
-        if ($resultSearch->num_rows === 0) {
-            $noResult = "No " . $searchParam . " book found in " .  $typeParam;
-            $result = $bookResult;
-        } else {
-            $result = $resultSearch;
-        }
+        $result = $resultSearch;
+        
     } else {
+
         $result = $bookResult;
+
     }
 } else {
     $result = $bookResult;
@@ -65,8 +99,9 @@ if (isset($_GET['search'])) {
             <form action="" method="GET" id="search-form">
                 <div class="search-input-container">
                     <select name="type" class="select-style">
-                        <option value="academic">academic</option>
-                        <option value="non-academic">non-academic</option>
+                        <option value="all">All</option>
+                        <option value="academic">Academic</option>
+                        <option value="non-academic">Non-academic</option>
                     </select>
                     <input
                         type="search"
@@ -153,7 +188,10 @@ if (isset($_GET['search'])) {
                         <p id="bookFormat"></p>
                     </div>
                 </div>
-                <div class="search-book-sidebar-btn-container">
+                <div class="search-book-sidebar-note-container" style="display: <?php echo $countBorrowedBooksRow["total"] == 15 ? "block" : "none" ?>;">
+                    <p>You can only borrow a maximum of 15 books.</p>
+                </div>
+                <div class="search-book-sidebar-btn-container" style="display: <?php echo $countBorrowedBooksRow["total"] == 15 ? "none" : "block" ?>;">
                     <button class="cta-btn-primary search-book-sidebar-btn-request" type="submit" id="requestBtn" disabled>request</button>
                     <button class="ghost-btn search-book-sidebar-btn-wait-list" type="button" onclick="waitList(event, '<?= $_COOKIE['student'] ?>')" id="waitListBtn" disabled>add to wait list</button>
                 </div>

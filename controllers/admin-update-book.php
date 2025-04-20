@@ -1,15 +1,6 @@
 <?php
-
-$server = "localhost";
-$dbUsername = "lms_admin";
-$dbPassword = "admin12345";
-$dbname = "lms_db";
-
-$conn = new mysqli($server, $dbUsername, $dbPassword, $dbname);
-
-if ($conn->connect_error) {
-    throw new Exception("Connection failed: " . $conn->connect_error);
-}
+session_start();
+require_once "../utility/dp-connection.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -69,16 +60,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             $getPath->execute();
                             $result = $getPath->get_result();
                             $row = $result->fetch_assoc();
-                            
+
                             if (unlink($row["location"])) {
                                 if (move_uploaded_file($_FILES['ebook']['tmp_name'], $uploadFile)) {
-    
+
                                     $updateStmt = $conn->prepare("UPDATE uploads SET location = ?, fileName = ? WHERE bookRef = ?");
-    
+
                                     if (!$updateStmt) {
                                         throw new Exception("Prepare failed: " . $conn->error);
                                     }
-    
+
                                     $updateStmt->bind_param("sss", $uploadFile, $_FILES['ebook']['name'], $bookId,);
                                     $updateStmt->execute();
                                 } else {
@@ -162,7 +153,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 }
             }
 
-            echo "updated";
+            $_SESSION['alert'] = [
+                'type' => 'success',
+                'message' => 'Book updated successfully!'
+            ];
         } else {
             throw new Exception("Error executing statement: " . $updateBookStmt->error);
         }
@@ -170,6 +164,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $updateBookStmt->close();
         $conn->close();
     } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
+        $_SESSION['alert'] = [
+            'type' => 'danger',
+            'message' => 'Error: ' . $e->getMessage()
+        ];
     }
 }

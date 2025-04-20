@@ -142,11 +142,6 @@ $getUserWaitListResult = $getUserWaitList->get_result();
 
                 if (isset($_POST["user-profile-update"])) {
 
-                    $server = "localhost";
-                    $username = "lms_admin";
-                    $password = "admin12345";
-                    $dbname = "lms_db";
-
                     $firstName = $_POST["fName"];
                     $lastName = $_POST["lName"];
                     $section = $_POST["section"];
@@ -154,11 +149,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                     $userId = $userInfoRow["id"];
 
                     try {
-                        $conn = new mysqli($server, $username, $password, $dbname);
-
-                        if ($conn->connect_error) {
-                            throw new Exception("Connection failed: " . $conn->connect_error);
-                        }
+                        require_once "../utility/dp-connection.php";
 
                         if (empty($_POST["cp"])) {
 
@@ -196,6 +187,42 @@ $getUserWaitListResult = $getUserWaitList->get_result();
         </div>
     </div>
 
+    <!-- NOTIFICATION PANEL -->
+    <div class="dashboard-notification-main-container" id="dashboardNotificationMainContainer" data-visible="false">
+        <div class="dashboard-notification-container">
+            <div class="dashboard-notification-title-container">
+                <h1>Notifications</h1>
+                <button onclick="toggleModal('dashboardNotificationMainContainer')"><img alt="close icon" src="../assets/close.svg"></button>
+            </div>
+            <div class="dashboard-notification">
+                <?php
+                $notificationsStmt = $conn->prepare("SELECT title, content, time_stamp FROM notifications WHERE studentNumber = ?");
+                $notificationsStmt->bind_param("i", $_COOKIE["student"]);
+                $notificationsStmt->execute();
+                $notifications = $notificationsStmt->get_result();
+                ?>
+                <?php if ($notifications->num_rows > 0) { ?>
+                    <?php while ($userNotifications = $notifications->fetch_assoc()) { ?>
+                        <?php try { ?>
+
+                            <div class="dashboard-notification-content">
+                                <h1><?php echo htmlspecialchars($userNotifications["title"]) ?></h1>
+                                <p><?php echo htmlspecialchars($userNotifications["content"]) ?></p>
+                                <span><?php echo htmlspecialchars($userNotifications["time_stamp"]) ?></span>
+                            </div>
+
+                        <?php } catch (Exception $e) { ?>
+                            <?php echo "Error: " . $e->getMessage(); ?>
+                        <?php } ?>
+                    <?php } ?>
+                <?php } else { ?>
+                    <?php echo '<div><p>No notification</p></div>'; ?>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIGITAL BOOK VIEWER -->
     <div class="view-book" data-visible="false" id="viewBook">
         <div id="my_pdf_viewer" class="pdf-viewer-container">
             <div class="view-book-close-icon-container"><img src="../assets/close.svg" class="view-book-close-icon" onclick="openBook()"></div>
@@ -222,14 +249,14 @@ $getUserWaitListResult = $getUserWaitList->get_result();
             <p>search books</p>
         </div>
         <div class="user-profile">
-            <button><img src="../assets/notifications-outline.svg" class="notifications-icon"></button>
+            <button onclick="toggleModal('dashboardNotificationMainContainer')"><img src="../assets/notifications-outline.svg" class="notifications-icon"></button>
             <button onclick="toggleMenu()" class="user-profile-btn"><img src="../assets/person-circle.svg" class="user-profile-icon"></button>
 
             <div class="user-profile-dialogue" data-visible="false">
                 <div class="user-profile-dialogue-items">
                     <button onclick="clickProfile()"><img src="../assets/person-outline.svg"> Profile</button>
                     <button><img src="../assets/sunny-outline.svg"> Theme</button>
-                    <button onclick="enableNotification()"><img src="../assets/notifications-off-outline.svg"> Notification</button>
+                    <button onclick="enableNotification()"><img id="notificationIcon" src="../assets/notifications-off-outline.svg"> Notification</button>
                 </div>
                 <button onclick="window.location.href = '../utility/logout.php'">Log-out</button>
             </div>
@@ -451,7 +478,6 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                         <th>Status</th>
                     </thead>
                     <tbody>
-
                         <?php if ($getUserWaitListResult->num_rows > 0) { ?>
                             <?php while ($waitListData = $getUserWaitListResult->fetch_assoc()) { ?>
                                 <?php try { ?>

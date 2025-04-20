@@ -13,7 +13,6 @@ function onReturn(event, borrowId, bookRef, borrower) {
     })
     .then(response => response.text())
     .then(data => {
-        alert(data);
         location.reload();
     })
     .catch(error => console.error(error));

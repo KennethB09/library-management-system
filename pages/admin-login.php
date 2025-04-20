@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($result->num_rows === 1) {
             $admin = $result->fetch_assoc();
 
-            if ($_POST["password"] === $admin["password"]) {
+            if (password_verify($_POST["password"], $admin["password"])) {
 
                 setcookie("admin", $admin["id"], time() + (86400 * 30), "/");
 

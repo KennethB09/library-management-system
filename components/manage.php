@@ -1,10 +1,9 @@
 <?php
-
 require "../utility/dp-connection.php";
 
 $resultSearch;
 $result;
-$noResult;
+$noResult = "";
 
 $stmt = $conn->prepare("SELECT id, title, author, genre, type, description, format FROM books");
 $stmt->execute();
@@ -17,13 +16,9 @@ $countRow = $booksCount['total'];
 
 if (isset($_GET['search'])) {
     $searchParam = isset($_GET['search']) ? $_GET['search'] : '';
+    $typeParam = $_GET['type'];
 
-    if ($searchParam !== "") {
-        if (isset($_GET['type'])) {
-            $typeParam = $_GET['type'];
-        } else {
-            $filterType = 'academic';
-        }
+    if ($searchParam != "") {
 
         $stmtSearch = $conn->prepare("SELECT * FROM books WHERE title LIKE ? AND type = ?");
         $stmtSearch->bind_param("ss", $searchParam, $typeParam);
@@ -33,16 +28,23 @@ if (isset($_GET['search'])) {
         if ($resultSearch->num_rows === 0) {
             $noResult = "No " . $searchParam . " book found in " .  $typeParam;
         } else {
-            $noResult = "";
             $result = $resultSearch;
         }
     } else {
-        $result = $resultTotal;
-        $noResult = "";
+
+        if ($typeParam != "all") {
+            $stmtSearch = $conn->prepare("SELECT * FROM books WHERE type = ?");
+            $stmtSearch->bind_param("s", $typeParam);
+            $stmtSearch->execute();
+            $resultSearch = $stmtSearch->get_result();
+
+            $result = $resultSearch;
+        } else {
+            $result = $resultTotal;
+        }
     }
 } else {
     $result = $resultTotal;
-    $noResult = "";
 }
 
 ?>
@@ -56,6 +58,7 @@ if (isset($_GET['search'])) {
     <link rel="stylesheet" type="text/css" href="../styles/admin-component-style.css">
     <link rel="stylesheet" type="text/css" href="../styles/main.css">
     <script defer src="../js/admin-manage.js"></script>
+    <script defer src="../js/admin-dashboard-crud.js"></script>
     <title>Dashboard | manage</title>
 </head>
 
@@ -66,8 +69,9 @@ if (isset($_GET['search'])) {
             <form action="" method="GET" id="search-form-manage">
                 <div class="search-input-container">
                     <select name="type" class="select-style">
-                        <option value="academic">academic</option>
-                        <option value="non-academic">non-academic</option>
+                        <option value="all">All</option>
+                        <option value="academic">Academic</option>
+                        <option value="non-academic">Non-Academic</option>
                     </select>
                     <input
                         type="search"
@@ -259,7 +263,7 @@ if (isset($_GET['search'])) {
                         <div class="input-container" id="uploadInputContainer">
                             <label for="fileInputEdit">Upload PDF</label>
                             <input type="hidden" name="MAX_FILE_SIZE" value="100000000">
-                            <input type="file" id="fileInputEdit" name="ebook" accept=".pdf" >
+                            <input type="file" id="fileInputEdit" name="ebook" accept=".pdf">
                         </div>
                     </div>
                     <div class="input-container">
@@ -292,27 +296,15 @@ if (isset($_GET['search'])) {
     </main>
 </body>
 
-<script src="../js/admin-dashboard-crud.js"></script>
-
 <?php
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $server = "localhost";
-    $username = "lms_admin";
-    $password = "admin12345";
-    $dbname = "lms_db";
-
     try {
+
         if ((isset($_POST['format']) && ($_POST['format'] === "physical" || $_POST['format'] === "both")) &&
             (empty($_POST["copies"]) || (int)$_POST["copies"] <= 0)
         ) {
             throw new Exception("Please add at least one copy for physical books.");
-        }
-
-        $conn = new mysqli($server, $username, $password, $dbname);
-
-        if ($conn->connect_error) {
-            throw new Exception("Connection failed: " . $conn->connect_error);
         }
 
         $insertBookStmt = $conn->prepare("INSERT INTO books (title, type, genre, description, author, format) VALUES (?, ?, ?, ?, ?, ?)");
@@ -332,7 +324,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         );
 
         if (isset($_POST['format']) && $_POST['format'] !== "physical") {
-            
+
             $uploadDir = "../uploads/";
             $uploadFile = $uploadDir . basename($_FILES['ebook']['name']);
 
@@ -363,13 +355,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $insertOneCopy->bind_param("is", $bookId, $_POST['format']);
 
                     $insertOneCopy->execute();
-
                 } else {
-                    throw new Exception("Error inserting digital copy: ". $conn->error);
+                    throw new Exception("Error inserting digital copy: " . $conn->error);
                 }
-                
             } else {
-                echo 'Error: ' . $_FILES['ebook']['error'];
+                $_SESSION['alert'] = [
+                    'type' => 'warning',
+                    'message' => 'Error: ' . $_FILES['ebook']['error']
+                ];
                 exit("Upload Error");
             }
         } else if (isset($_POST['format']) && $_POST['format'] === "both") {
@@ -393,7 +386,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $uploadStmt->bind_param("iss", $bookId, $uploadFile, $_FILES['file']['name']);
                     $uploadStmt->execute();
                 } else {
-                    echo 'Error: ' . $_FILES['file']['error'];
+                    $_SESSION['alert'] = [
+                        'type' => 'warning',
+                        'message' => 'Error: ' . $_FILES['file']['error']
+                    ];
                     exit("Upload Error");
                 }
 
@@ -405,7 +401,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $sql = "INSERT INTO books_copy (bookRef, status) VALUES " . implode(", ", $values);
                 $conn->query($sql);
 
-                echo "New record created successfully";
+                $_SESSION['alert'] = [
+                    'type' => 'success',
+                    'message' => "New record created successfully"
+                ];
             } else {
                 throw new Exception("Error executing statement: " . $insertBookStmt->error);
             }
@@ -426,7 +425,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $sql = "INSERT INTO books_copy (bookRef, status) VALUES " . implode(", ", $values);
                 $conn->query($sql);
 
-                echo "New record created successfully";
+                $_SESSION['alert'] = [
+                    'type' => 'success',
+                    'message' => "New record created successfully"
+                ];
             } else {
                 throw new Exception("Error executing statement: " . $insertBookStmt->error);
             }
@@ -434,7 +436,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $conn->close();
     } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
+        $_SESSION['alert'] = [
+            'type' => 'danger',
+            'message' => "Error: " . $e->getMessage()
+        ];
     }
 }
 ?>

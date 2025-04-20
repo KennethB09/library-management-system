@@ -1,15 +1,6 @@
 <?php
-
-$server = "localhost";
-$dbUsername = "lms_admin";
-$dbPassword = "admin12345";
-$dbname = "lms_db";
-
-$conn = new mysqli($server, $dbUsername, $dbPassword, $dbname);
-
-if ($conn->connect_error) {
-    throw new Exception("Connection failed: " . $conn->connect_error);
-}
+session_start();
+require_once "../utility/dp-connection.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -57,17 +48,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     );
                     $deleteBookCopiesStmt->execute();
 
-                    echo "File deleted successfully";
+                    $_SESSION['alert'] = [
+                        'type' => 'success',
+                        'message' => "File deleted successfully"
+                    ];
                 }
             }
 
-            echo "Book is Deleted";
+            $_SESSION['alert'] = [
+                'type' => 'success',
+                'message' => "Book is Deleted"
+            ];
         } else {
             throw new Exception("Error executing statement: " . $deleteBookStmt->error);
         }
 
         $conn->close();
     } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
+        $_SESSION['alert'] = [
+            'type' => 'danger',
+            'message' => "Error: " . $e->getMessage()
+        ];
     }
 }

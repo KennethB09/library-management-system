@@ -15,7 +15,6 @@ function onApprove(event, requestId, bookRef, dueDate, borrower, format) {
     })
     .then(response => response.text())
     .then(data => {
-        alert(data);
         location.reload();
     })
     .catch(error => console.error(error));
@@ -31,7 +30,6 @@ function onDecline(event, requestId) {
     })
     .then(response => response.text())
     .then(data => {
-        alert(data);
         location.reload();
     })
     .catch(error => console.error(error));
