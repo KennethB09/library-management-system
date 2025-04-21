@@ -18,14 +18,14 @@ header {
                 cursor: pointer;
                 width: 30px;
                 aspect-ratio: 1/1;
-                filter: invert(8%) sepia(9%) saturate(7%) hue-rotate(314deg) brightness(102%) contrast(91%);
+                filter: var(--icon-clr);
             }
 
             .user-profile-icon {
                 cursor: pointer;
                 width: 30px;
                 aspect-ratio: 1/1;
-                filter: invert(8%) sepia(9%) saturate(7%) hue-rotate(314deg) brightness(102%) contrast(91%);
+                filter: var(--icon-clr);
             }
         }
 
@@ -67,7 +67,7 @@ header {
                     img {
                         width: 20px;
                         aspect-ratio: 1/1;
-                        filter: invert(8%) sepia(9%) saturate(7%) hue-rotate(314deg) brightness(102%) contrast(91%);
+                        filter: var(--icon-clr);
                     }
 
                 }
@@ -100,7 +100,8 @@ header {
         .search-icon {
             width: 30px;
             aspect-ratio: 1/1;
-            filter: invert(8%) sepia(9%) saturate(7%) hue-rotate(314deg) brightness(102%) contrast(91%);
+            /* invert(8%) sepia(9%) saturate(7%) hue-rotate(314deg) brightness(102%) contrast(91%); */
+            filter: var(--icon-clr);
         }
 
         p {
@@ -495,7 +496,7 @@ header {
         height: 100%;
 
         h1 {
-            color: var(--bg-white);
+            color: #ffffff;
             font-size: 60px;
             font-weight: var(--fontWBold);
         }
@@ -506,7 +507,7 @@ header {
             font-weight: var(--fontWRegular);
 
             span {
-                color: var(--bg-white);
+                color: #ffffff;
             }
         }
     }
@@ -532,7 +533,7 @@ header {
                 width: 100%;
                 font-size: var(--fontSize-md);
                 font-weight: var(--fontWSemi);
-                color: var(--gray);
+                color: var(--title);
             }
 
             div {
@@ -573,7 +574,7 @@ header {
                 width: 100%;
                 font-size: var(--fontSize-md);
                 font-weight: var(--fontWSemi);
-                color: var(--gray);
+                color: var(--title);
             }
 
             div {

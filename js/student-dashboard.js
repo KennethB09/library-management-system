@@ -1,3 +1,29 @@
+const selectedScheme = localStorage.getItem("scheme");
+const root = document.getElementById("root");
+const themeIcon = document.getElementById("themeIcon");
+
+if (selectedScheme === "light") {
+    root.setAttribute("data-scheme", "light");
+    themeIcon.src = "../assets/sunny-outline.svg";
+} else {
+    root.setAttribute("data-scheme", "dark");
+    themeIcon.src = "../assets/moon-outline.svg";
+}
+
+function changeTheme() {
+    const getScheme = root.getAttribute("data-scheme");
+    
+    if (getScheme === "light") {
+        root.setAttribute("data-scheme", "dark");
+        localStorage.setItem("scheme", "dark");
+        themeIcon.src = "../assets/moon-outline.svg";
+    } else {
+        root.setAttribute("data-scheme", "light");
+        localStorage.setItem("scheme", "light");
+        themeIcon.src = "../assets/sunny-outline.svg";
+    }
+}
+
 function switchTable(table) {
     const borrowTable = document.getElementById("borrowTable");
     const requestTable = document.getElementById("requestTable");

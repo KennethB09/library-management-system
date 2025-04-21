@@ -11,6 +11,27 @@ if (currentTab) {
     document.getElementById("defaultTab").click();
 }
 
+const selectedScheme = localStorage.getItem("scheme");
+const root = document.getElementById("root");
+
+if (selectedScheme === "light") {
+    root.setAttribute("data-scheme", "light");
+} else {
+    root.setAttribute("data-scheme", "dark");
+}
+
+function changeTheme() {
+    const getScheme = root.getAttribute("data-scheme");
+    
+    if (getScheme === "light") {
+        root.setAttribute("data-scheme", "dark");
+        localStorage.setItem("scheme", "dark");
+    } else {
+        root.setAttribute("data-scheme", "light");
+        localStorage.setItem("scheme", "light");
+    }
+}
+
 function changeTab(evt, tabName) {
     let i = 0;
     const tabContent = document.getElementsByClassName("tab-content");

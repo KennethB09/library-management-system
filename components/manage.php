@@ -18,7 +18,19 @@ if (isset($_GET['search'])) {
     $searchParam = isset($_GET['search']) ? $_GET['search'] : '';
     $typeParam = $_GET['type'];
 
-    if ($searchParam != "") {
+    if ($searchParam != "" && $typeParam == "all") {
+
+        $stmtSearch = $conn->prepare("SELECT * FROM books WHERE title LIKE ?");
+        $stmtSearch->bind_param("s", $searchParam);
+        $stmtSearch->execute();
+        $resultSearch = $stmtSearch->get_result();
+
+        if ($resultSearch->num_rows === 0) {
+            $noResult = "No " . $searchParam . " book found in " .  $typeParam;
+        } else {
+            $result = $resultSearch;
+        }
+    } else if ($searchParam != "" && $typeParam != "all") {
 
         $stmtSearch = $conn->prepare("SELECT * FROM books WHERE title LIKE ? AND type = ?");
         $stmtSearch->bind_param("ss", $searchParam, $typeParam);
@@ -148,23 +160,23 @@ if (isset($_GET['search'])) {
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data" method="post">
                     <div class="input-container title">
                         <label for="add-form-title">Title</label>
-                        <input id="add-form-title" name="title" placeholder="Enter book title" required />
+                        <input class="input-style" id="add-form-title" name="title" placeholder="Enter book title" required />
                     </div>
                     <div class="input-container author">
                         <label for="add-form-author">Author</label>
-                        <input id="add-form-author" name="author" placeholder="Enter book author" required />
+                        <input class="input-style" id="add-form-author" name="author" placeholder="Enter book author" required />
                     </div>
                     <div class="type-genre-copies-container">
                         <div class="input-container">
                             <label for="add-form-type">Type</label>
-                            <select id="add-form-type" name="type" required>
+                            <select class="select-style" id="add-form-type" name="type" required>
                                 <option value="academic">academic</option>
                                 <option value="non-academic">non-academic</option>
                             </select>
                         </div>
                         <div class="input-container">
                             <label for="add-form-genre">Genre</label>
-                            <select id="add-form-genre" name="genre" required>
+                            <select class="select-style" id="add-form-genre" name="genre" required>
                                 <option value="fantasy">fantasy</option>
                                 <option value="sci-fi">sci-fi</option>
                                 <option value="romance">romance</option>
@@ -178,14 +190,14 @@ if (isset($_GET['search'])) {
                         </div>
                         <div class="input-container" id="addFormCopiesInput">
                             <label for="add-form-copies">Copies</label>
-                            <input id="add-form-copies" name="copies" type="number" placeholder="Enter book copies" />
+                            <input class="input-style" id="add-form-copies" name="copies" type="number" placeholder="Enter book copies" />
                         </div>
                     </div>
                     <!--- upload --->
                     <div class="availableIn-ebook-container">
                         <div class="input-container">
                             <label for="formatAdd">Format</label>
-                            <select name="format" id="formatAdd" required>
+                            <select class="select-style" name="format" id="formatAdd" required>
                                 <option value="physical">physical</option>
                                 <option value="digital">digital</option>
                                 <option value="both">both</option>
@@ -194,7 +206,7 @@ if (isset($_GET['search'])) {
                         <div class="input-container">
                             <label for="fileInputAdd">PDF</label>
                             <input type="hidden" name="MAX_FILE_SIZE" value="100000000">
-                            <input type="file" id="fileInputAdd" name="ebook" accept=".pdf" disabled>
+                            <input class="input-style" type="file" id="fileInputAdd" name="ebook" accept=".pdf" disabled>
                         </div>
                     </div>
                     <!--- upload --->
@@ -222,23 +234,23 @@ if (isset($_GET['search'])) {
                     <input id="edit-form-bookId" name="id" hidden />
                     <div class="input-container title">
                         <label for="edit-form-title">Title</label>
-                        <input id="edit-form-title" name="title" placeholder="Enter book title" required />
+                        <input class="input-style" id="edit-form-title" name="title" placeholder="Enter book title" required />
                     </div>
                     <div class="input-container author">
                         <label for="edit-form-author">Author</label>
-                        <input id="edit-form-author" name="author" placeholder="Enter book author" required />
+                        <input class="input-style" id="edit-form-author" name="author" placeholder="Enter book author" required />
                     </div>
                     <div class="type-genre-copies-container">
                         <div class="input-container">
                             <label for="edit-form-type">Type</label>
-                            <select id="edit-form-type" name="type" required>
+                            <select class="select-style" id="edit-form-type" name="type" required>
                                 <option value="academic">academic</option>
                                 <option value="non-academic">non-academic</option>
                             </select>
                         </div>
                         <div class="input-container">
                             <label for="edit-form-genre">Genre</label>
-                            <select id="edit-form-genre" name="genre" required>
+                            <select class="select-style" id="edit-form-genre" name="genre" required>
                                 <option value="fantasy">fantasy</option>
                                 <option value="sci-fi">sci-fi</option>
                                 <option value="romance">romance</option>
@@ -252,18 +264,18 @@ if (isset($_GET['search'])) {
                         </div>
                         <div class="input-container">
                             <label for="edit-form-copies">Copies</label>
-                            <input id="edit-form-copies" name="copies" type="number" placeholder="Enter book copies" required />
+                            <input class="input-style" id="edit-form-copies" name="copies" type="number" placeholder="Enter book copies" required />
                         </div>
                     </div>
                     <div class="availableIn-ebook-container">
                         <div class="input-container">
                             <label for="formatEdit">Format</label>
-                            <input type="text" name="format" id="formatEdit" readonly>
+                            <input class="input-style" type="text" name="format" id="formatEdit" readonly>
                         </div>
                         <div class="input-container" id="uploadInputContainer">
                             <label for="fileInputEdit">Upload PDF</label>
                             <input type="hidden" name="MAX_FILE_SIZE" value="100000000">
-                            <input type="file" id="fileInputEdit" name="ebook" accept=".pdf">
+                            <input class="input-style" type="file" id="fileInputEdit" name="ebook" accept=".pdf">
                         </div>
                     </div>
                     <div class="input-container">

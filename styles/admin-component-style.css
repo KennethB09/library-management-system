@@ -26,7 +26,7 @@ main {
 
         h1 {
             font-size: var(--fontSize-lg);
-            color: var(--gray);
+            color: var(--title);
             font-weight: var(--fontWSemi);
         }
 
@@ -66,7 +66,7 @@ main {
 
         h1 {
             font-size: var(--fontSize-lg);
-            color: var(--gray);
+            color: var(--title);
             font-weight: var(--fontWSemi);
         }
 
@@ -106,7 +106,7 @@ main {
 
         h1 {
             font-size: var(--fontSize-lg);
-            color: var(--gray);
+            color: var(--title);
             font-weight: var(--fontWSemi);
         }
 
@@ -157,7 +157,7 @@ main {
 
     h1 {
         font-size: var(--fontSize-lg);
-        color: var(--gray);
+        color: var(--title);
         font-weight: var(--fontWSemi);
     }
 
@@ -174,7 +174,7 @@ main {
 
             thead {
                 th {
-                    color: var(--gray);
+                    color: var(--title);
                     width: 25%;
                     border-collapse: collapse;
                     padding: 20px 0;
@@ -217,7 +217,7 @@ main {
 
         h1 {
             font-size: var(--fontSize-sm);
-            color: var(--gray);
+            color: var(--title);
             font-weight: var(--fontWSemi);
         }
 
@@ -241,13 +241,13 @@ main {
 
             .crud-btn-edit[data-active=true] {
                 img {
-                    filter: invert(30%) sepia(52%) saturate(3573%) hue-rotate(224deg) brightness(103%) contrast(101%);
+                    filter: var(--icon-blue);
                 }
             }
 
             .crud-btn-delete[data-active=true] {
                 img {
-                    filter: invert(28%) sepia(55%) saturate(1293%) hue-rotate(324deg) brightness(135%) contrast(102%);
+                    filter: var(--icon-red);
                 }
             }
         }
@@ -273,7 +273,15 @@ main {
             th {
                 width: 16%;
                 border-bottom: none;
-
+            }
+        }
+        tbody {
+            tr {
+                td {
+                    button {
+                        width: 100px;
+                    }
+                }
             }
         }
     }
@@ -286,7 +294,6 @@ main {
                 width: 16%;
                 border-bottom: none;
             }
-
         }
     }
 }
@@ -323,7 +330,7 @@ main {
         h1 {
             text-transform: capitalize;
             font-size: var(--fontSize-md);
-            color: var(--gray);
+            color: var(--title);
             font-weight: var(--fontWSemi);
         }
 
@@ -373,13 +380,7 @@ main {
 
                 select {
                     width: 100%;
-                    padding: .5rem;
-                    border-radius: 10px;
-                    color: var(--gray)
-                }
-
-                select:focus {
-                    outline-color: var(--blue);
+                    border: 1px solid var(--gray);
                 }
 
                 input {
@@ -437,6 +438,7 @@ main {
                 padding: .5rem 1rem;
                 height: 100px;
                 border-radius: 10px;
+                background-color: var(--input);
                 border: 1px solid var(--gray);
                 color: var(--gray);
             }

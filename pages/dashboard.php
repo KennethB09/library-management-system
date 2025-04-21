@@ -50,7 +50,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="root" data-scheme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -255,7 +255,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
             <div class="user-profile-dialogue" data-visible="false">
                 <div class="user-profile-dialogue-items">
                     <button onclick="clickProfile()"><img src="../assets/person-outline.svg"> Profile</button>
-                    <button><img src="../assets/sunny-outline.svg"> Theme</button>
+                    <button onclick="changeTheme()"><img id="themeIcon" src="../assets/sunny-outline.svg"> Theme</button>
                     <button onclick="enableNotification()"><img id="notificationIcon" src="../assets/notifications-off-outline.svg"> Notification</button>
                 </div>
                 <button onclick="window.location.href = '../utility/logout.php'">Log-out</button>
@@ -423,7 +423,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                                 <?php } ?>
                             <?php } ?>
                         <?php } else { ?>
-                            <?php echo '<tr><td>0 result</td></tr>'; ?>
+                            <?php echo '<tr class="table-row-no-result"><td colspan="5">No Borrowed Books</td></tr>'; ?>
                         <?php } ?>
                     </tbody>
                 </table>
@@ -463,7 +463,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                                 <?php } ?>
                             <?php } ?>
                         <?php } else { ?>
-                            <?php echo '<tr><td>0 result</td></tr>'; ?>
+                            <?php echo '<tr class="table-row-no-result"><td colspan="4">No Requested Books</td></tr>'; ?>
                         <?php } ?>
 
                     </tbody>
@@ -507,7 +507,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                                 <?php } ?>
                             <?php } ?>
                         <?php } else { ?>
-                            <?php echo '<tr><td>0 result</td></tr>'; ?>
+                            <?php echo '<tr class="table-row-no-result"><td colspan="4">No Wait-list</td></tr>'; ?>
                         <?php } ?>
                     </tbody>
                 </table>

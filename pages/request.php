@@ -101,13 +101,24 @@ $section = $studentRow["section"];
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="root" data-scheme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../styles/request-book.css">
+    <link rel="icon" type="image/x-icon" href="../assets/logo.png">
     <link rel="stylesheet" type="text/css" href="../styles/main.css">
+    <script>
+        const selectedScheme = localStorage.getItem("scheme");
+        const root = document.getElementById("root");
+
+        if (selectedScheme === "light") {
+            root.setAttribute("data-scheme", "light");
+        } else {
+            root.setAttribute("data-scheme", "dark");
+        }
+    </script>
     <title>Student | Request Book</title>
 </head>
 

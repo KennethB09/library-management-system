@@ -42,6 +42,12 @@ main {
     .search-main-container.search-book-search-bar {
         justify-self: center;
     }
+    
+    .search-input-container {
+        input {
+            border: none;
+        }
+    }
 }
 
 .search-book-sidebar-form {
@@ -68,6 +74,7 @@ main {
             text-align: center;
             font-size: var(--fontSize-xl);
             font-weight: var(--fontWBold);
+            color: var(--title);
         }
 
         .search-book-sidebar-info-container {
@@ -165,6 +172,7 @@ main {
 
         .search-result-card-title {
             font-size: var(--fontSize-lg);
+            color: var(--title);
         }
 
         .search-result-card-info {
@@ -192,6 +200,6 @@ main {
     }
 
     .search-result-card:hover {
-        background-color: rgb(233, 233, 233);
+        opacity: .5;
     }
 }

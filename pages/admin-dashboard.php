@@ -16,7 +16,7 @@ $fNameErr = $lNameErr = $newPassErr = $reNewPassErr = $oldPassErr = "";
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="root" data-scheme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -91,6 +91,7 @@ $fNameErr = $lNameErr = $newPassErr = $reNewPassErr = $oldPassErr = "";
             <div class="admin-info-edit-btn-container">
                 <button onclick="showForm('adminInfoContent', 'adminInfoEditFormContainer', 'adminInfoNewAdminFormContainer')"><img src="../assets/pencil.svg"> Edit Information</button>
                 <button onclick="showForm('adminInfoContent', 'adminInfoNewAdminFormContainer', 'adminInfoEditFormContainer')"><img src="../assets/person-add.svg"> Add New Admin</button>
+                <button onclick="changeTheme()">Theme</button>
             </div>
             <div class="admin-info-content" id="adminInfoContent" data-visible="true">
                 <h1>Current Logged-in</h1>
@@ -103,6 +104,7 @@ $fNameErr = $lNameErr = $newPassErr = $reNewPassErr = $oldPassErr = "";
                     <span class="admin-last-name"><?php echo $adminInfo["lastName"] ?></span>
                 </div>
             </div>
+            
             <div class="admin-info-edit-form-container" id="adminInfoEditFormContainer" data-visible="false">
 
                 <form id="adminUpdateInfo" method="post">

@@ -12,9 +12,38 @@
     --bg-white: #ffffff;
     --blue: #4161ff;
     --gray: #4d4d4d;
+    --title: #2e2e2e;
     --orange: #ffc000;
     --red: #FC4949;
+    --input: #ffffff;
+
     --icon-clr: invert(27%) sepia(8%) saturate(17%) hue-rotate(323deg) brightness(90%) contrast(79%);
+    --icon-blue: invert(30%) sepia(52%) saturate(3573%) hue-rotate(224deg) brightness(103%) contrast(101%);
+    --icon-red: invert(28%) sepia(55%) saturate(1293%) hue-rotate(324deg) brightness(135%) contrast(102%);
+    --modal-bg: rgba(0, 0, 0, 0.507);
+
+    --fontSize-sm: 16px;
+    --fontSize-md: 20px;
+    --fontSize-lg: 24px;
+    --fontSize-xl: 32px;
+    --fontSize-xxl: 96px;
+
+    --fontWRegular: 400;
+    --fontWSemi: 600;
+    --fontWBold: 700;
+}
+
+#root[data-scheme="dark"] {
+    --bg-color: #000000;
+    --bg-white: #2e2e2e;
+    --blue: #4161ff;
+    --gray: #bfbfbf;
+    --title: #ffffff;
+    --orange: #ffc000;
+    --red: #FC4949;
+    --input: #2e2e2e;
+
+    --icon-clr: invert(100%) sepia(6%) saturate(189%) hue-rotate(316deg) brightness(113%) contrast(89%);
     --icon-blue: invert(30%) sepia(52%) saturate(3573%) hue-rotate(224deg) brightness(103%) contrast(101%);
     --icon-red: invert(28%) sepia(55%) saturate(1293%) hue-rotate(324deg) brightness(135%) contrast(102%);
     --modal-bg: rgba(0, 0, 0, 0.507);
@@ -46,7 +75,7 @@ body {
     padding: .5rem 1rem;
     width: 120px;
     border-radius: 10px;
-    color: var(--bg-white);
+    color: #ffffff;
     font-size: var(--fontSize-sm);
     font-weight: var(--fontWSemi);
     text-transform: capitalize;
@@ -64,7 +93,7 @@ body {
     padding: .5rem 1rem;
     width: 120px;
     border-radius: 10px;
-    color: var(--bg-white);
+    color: #ffffff;
     font-size: var(--fontSize-sm);
     font-weight: var(--fontWSemi);
     text-transform: capitalize;
@@ -98,6 +127,7 @@ body {
     border: none;
     border-radius: 10px;
     padding: .5rem;
+    background-color: var(--input);
     color: var(--gray);
     border: 1px solid var(--gray);
 }
@@ -110,6 +140,7 @@ body {
     border: none;
     padding: .5rem;
     border-radius: 10px;
+    background-color: var(--input);
     color: var(--gray)
 }
 
@@ -124,7 +155,7 @@ body {
     justify-content: center;
     width: 100%;
     gap: .5rem;
-    
+
     .search-input-container {
         display: flex;
         width: 100%;

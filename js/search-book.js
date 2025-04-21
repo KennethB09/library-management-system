@@ -11,6 +11,15 @@ const bookFormat = document.getElementById("bookFormat");
 const requestBtn = document.querySelector(".search-book-sidebar-btn-request");
 const waitListBtn = document.querySelector(".search-book-sidebar-btn-wait-list");
 
+const selectedScheme = localStorage.getItem("scheme");
+const root = document.getElementById("root");
+
+if (selectedScheme === "light") {
+    root.setAttribute("data-scheme", "light");
+} else {
+    root.setAttribute("data-scheme", "dark");
+}
+
 let selectedId = "";
 
 function onClickBook(id, title, author, type, genre, description, available, total, formatType) {

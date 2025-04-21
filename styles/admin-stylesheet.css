@@ -8,12 +8,13 @@
     }
 }
 
-
+/* MAIN CONTAINER */
 .admin-dashboard {
     background-color: var(--bg-color);
     display: flex;
     flex-direction: column;
 
+    /* CUSTOM ALERT */
     .alert {
         position: absolute;
         align-self: center;
@@ -67,6 +68,7 @@
         background-color: #1e33d0;
     }
 
+    /* NAVIGATION */
     .admin-nav {
         display: flex;
         width: 100%;
@@ -89,6 +91,7 @@
                 font-size: var(--fontSize-md);
                 text-align: start;
                 margin-bottom: .5rem;
+                color: var(--title);
             }
         }
 
@@ -107,14 +110,14 @@
                     cursor: pointer;
                     border: none;
                     background-color: transparent;
-                    color: var(--bg-white);
+                    color: #ffffff;
                     transition: color 0.3s ease;
                     font-size: var(--fontSize-sm);
                     font-weight: var(--fontWSemi);
                 }
 
                 button.active {
-                    border-bottom: solid var(--bg-white) 2px;
+                    border-bottom: solid #ffffff 2px;
                     padding-bottom: .3rem;
                 }
             }
@@ -186,7 +189,7 @@
             h1 {
                 font-size: var(--fontSize-sm);
                 font-weight: var(--fontWSemi);
-                color: var(--gray);
+                color: var(--title);
             }
 
             .admin-first-name-container {
@@ -197,7 +200,7 @@
                 .admin-first-name-label {
                     font-weight: var(--fontWSemi);
                     font-size: var(--fontSize-sm);
-                    color: var(--gray);
+                    color: var(--title);
                     text-transform: capitalize;
                 }
 
@@ -215,7 +218,7 @@
                 .admin-last-name-label {
                     font-weight: var(--fontWSemi);
                     font-size: var(--fontSize-sm);
-                    color: var(--gray);
+                    color: var(--title);
                     text-transform: capitalize;
                 }
 
@@ -230,8 +233,7 @@
 
         .admin-info-edit-btn-container {
             display: flex;
-            justify-content: start;
-            gap: 2rem;
+            justify-content: space-between;
             margin-bottom: 1rem;
 
             button {

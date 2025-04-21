@@ -80,12 +80,13 @@ if (isset($_GET['search'])) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="root" data-scheme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../styles/search-book.css">
+    <link rel="icon" type="image/x-icon" href="../assets/logo.png">
     <link rel="stylesheet" type="text/css" href="../styles/main.css">
     <script defer src="../js/search-book.js"></script>
     <title>Student | Search</title>
