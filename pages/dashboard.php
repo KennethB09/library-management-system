@@ -64,9 +64,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
         }
     </script>
     <script defer src="../js/student-dashboard.js"></script>
-    <script src="../js/view-book-pdf.js"></script>
     <script defer src="../js/subscribe-notification.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.min.js"></script>
     <title>Student | Dashboard</title>
 </head>
 
@@ -218,27 +216,6 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                 <?php } else { ?>
                     <?php echo '<div><p>No notification</p></div>'; ?>
                 <?php } ?>
-            </div>
-        </div>
-    </div>
-
-    <!-- DIGITAL BOOK VIEWER -->
-    <div class="view-book" data-visible="false" id="viewBook">
-        <div id="my_pdf_viewer" class="pdf-viewer-container">
-            <div class="view-book-close-icon-container"><img src="../assets/close.svg" class="view-book-close-icon" onclick="openBook()"></div>
-            <div id="canvas_container">
-                <canvas id="pdf_renderer"></canvas>
-            </div>
-            <div class="pdf-viewer-navigation-container">
-                <div id="navigation_controls">
-                    <button id="go_previous">Previous</button>
-                    <input id="current_page" value="1" type="number" />
-                    <button id="go_next">Next</button>
-                </div>
-                <div id="zoom_controls">
-                    <button id="zoom_in">+</button>
-                    <button id="zoom_out">-</button>
-                </div>
             </div>
         </div>
     </div>
@@ -402,7 +379,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                                     ?>
 
                                     <?php if (isset($row["format"]) && $row["format"] === "digital") { ?>
-                                        <tr onClick="viewBook('<?php echo $pathRow["location"]; ?>')">
+                                        <tr onclick="window.location.href='http://localhost/library-management-system/web/viewer.html?file=<?php echo $pathRow["location"]; ?>'">
                                             <td><?php echo htmlspecialchars($row['title']); ?></td>
                                             <td><?php echo htmlspecialchars($row['genre']); ?></td>
                                             <td><?php echo htmlspecialchars($row['type']); ?></td>
