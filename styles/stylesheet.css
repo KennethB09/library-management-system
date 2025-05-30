@@ -28,6 +28,12 @@
 
 }
 
+.form-error {
+    font-size: var(--fontSize-sm);
+    color: var(--red);
+    font-weight: var(--fontWSemi);
+}
+
 .sign-up-main-container {
     display: flex;
     flex-direction: column;
@@ -85,7 +91,8 @@
                 display: flex;
                 gap: 1rem;
 
-                .section-container, .course-container {
+                .section-container,
+                .course-container {
                     width: 50%;
                     display: flex;
                     flex-direction: column;
@@ -143,7 +150,7 @@
                     padding-right: 5px;
                     color: var(--gray);
                 }
-                
+
                 input:focus {
                     outline-color: var(--blue);
                 }
@@ -210,13 +217,13 @@
             display: flex;
             flex-direction: column;
             gap: .3rem;
-    
+
             label {
                 color: var(--gray);
                 font-weight: var(--fontWSemi);
                 font-size: var(--fontSize-sm);
             }
-    
+
             input {
                 border: 1px solid var(--gray);
                 height: 30px;
@@ -225,12 +232,12 @@
                 padding-right: 5px;
                 color: var(--gray);
             }
-    
+
             input:focus {
                 outline-color: var(--blue);
             }
         }
-        
+
         button {
             background-color: var(--blue);
             color: var(--bg-white);
@@ -244,14 +251,14 @@
             font-size: var(--fontSize-sm);
             transition: background-color 0.3s ease;
         }
-        
+
         a {
             color: var(--blue);
             font-weight: var(--fontWSemi);
             font-size: var(--fontSize-sm);
             text-decoration: underline;
         }
-    
+
         p {
             color: var(--gray);
             font-weight: var(--fontWRegular);
@@ -270,8 +277,7 @@
     width: 100vw;
     background-color: var(--bg-color);
 
-    .role
-     {
+    .role {
         position: absolute;
         bottom: 1rem;
         left: 1rem;
@@ -349,4 +355,3 @@
         }
     }
 }
-

@@ -10,6 +10,10 @@ if (selectedScheme === "light") {
     themeIcon.src = "../assets/moon-outline.svg";
 }
 
+function openNewTab(url) {
+    window.open(url, "_blank").focus()
+}
+
 function changeTheme() {
     const getScheme = root.getAttribute("data-scheme");
     

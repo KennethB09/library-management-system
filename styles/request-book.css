@@ -66,7 +66,8 @@ body {
         flex-direction: column;
         gap: .3rem;
 
-        label, span {
+        label,
+        span {
             color: var(--gray);
             font-size: var(--fontSize-sm);
             font-weight: var(--fontWSemi);
@@ -83,8 +84,8 @@ body {
             border-radius: 10px;
         }
 
-        
-        
+
+
         div {
             display: flex;
             gap: 1rem;
@@ -100,7 +101,7 @@ body {
                 border-radius: 10px;
                 border: 1px solid var(--gray);
             }
-            
+
             select {
                 width: 100%;
                 padding: .5rem;
@@ -197,4 +198,26 @@ body {
         }
     }
 
+}
+
+@media (max-width: 768px) {
+
+    .main-container {
+
+        hr {
+            display: none;
+        }
+    }
+
+    .request-book-form {
+        width: 100%;
+
+        .info {
+            padding: 0 0;
+        }
+    }
+
+    .requested-book-container {
+        display: none;
+    }
 }

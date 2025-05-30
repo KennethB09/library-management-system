@@ -18,16 +18,14 @@ if (isset($_COOKIE["admin"])) {
 
 <?php
 
-$errorM = "";
+$error_password = "";
+$error_admin_name = "";
+$error_form = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $server = "localhost";
-    $dbUsername = "lms_admin";
-    $dbPassword = "admin12345";
-    $dbname = "lms_db";
 
     try {
-        $conn = new mysqli($server, $dbUsername, $dbPassword, $dbname);
+        require "../utility/dp-connection.php";
 
         if ($conn->connect_error) {
             throw new Exception("Connection failed: " . $conn->connect_error);
@@ -48,15 +46,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 header("Location: admin-dashboard.php");
                 exit();
             } else {
-                $errorM = "Invalid password.";
+                $error_password = "Invalid password.";
             }
         } else {
-            $errorM = "Invalid admin name.";
+            $error_admin_name = "Invalid admin name.";
         }
         $stmt->close();
         $conn->close();
     } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
+        $error_form = "Error: " . $e->getMessage();
     }
 }
 ?>
@@ -74,13 +72,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <label for="lastName">Admin Surname</label>
                     <input type="text" id="lastName" name="lastName" required autocomplete="off">
                 </div>
+                <?php if ($error_admin_name !== "") { ?>
+                    <span class="form-error"><?php echo htmlspecialchars($error_admin_name); ?></span>
+                <?php } ?>
                 <div class="input-container">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required autocomplete="off">
+                    <?php if ($error_password !== "") { ?>
+                        <span class="form-error"><?php echo htmlspecialchars($error_password); ?></span>
+                    <?php } ?>
                 </div>
 
                 <button type="submit">Login</button>
-                <p class="error"><?php echo $errorM ?></p>
             </form>
         </div>
 

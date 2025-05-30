@@ -9,7 +9,6 @@ if (Notification.permission === "granted") {
 }
 
 function enableNotification() {
-    console.log("hi")
     Notification.requestPermission().then((permission) => {
         if (permission === 'granted') {
             // get service worker
@@ -36,6 +35,5 @@ function enableNotification() {
                 });
             });
         }
-        console.log("hello")
     });
 }

@@ -71,17 +71,9 @@
     </div>
     <?php
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
-        $server = "localhost";
-        $username = "lms_admin";
-        $password = "admin12345";
-        $dbname = "lms_db";
 
         try {
-            $conn = new mysqli($server, $username, $password, $dbname);
-
-            if ($conn->connect_error) {
-                throw new Exception("Connection failed: " . $conn->connect_error);
-            }
+            require "../utility/dp-connection.php";
 
             $stmt = $conn->prepare("INSERT INTO users (studentNumber, firstName, lastName, password, email, course, section) VALUES (?, ?, ?, ?, ?, ?, ?)");
 

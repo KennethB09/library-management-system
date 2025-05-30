@@ -19,10 +19,41 @@ $getUserInfo->execute();
 $userInfoResult = $getUserInfo->get_result();
 $userInfoRow = $userInfoResult->fetch_assoc();
 
-$getUserBorrowedBooks = $conn->prepare("SELECT bookRef, borrowedOn, dueDate FROM borrowed_books WHERE borrower = ?");
-$getUserBorrowedBooks->bind_param("i", $_COOKIE["student"]);
-$getUserBorrowedBooks->execute();
-$borrowedBooksResult = $getUserBorrowedBooks->get_result();
+$filter = "all";
+
+if (isset($_GET['filter'])) {
+    $filter = $_GET['filter'];
+
+    if ($filter === 'physical') {
+        $getUserBorrowedBooks = $conn->prepare(
+            "SELECT bb.bookRef, bb.borrowedOn, bb.dueDate
+         FROM borrowed_books bb
+         JOIN books_copy bc ON bb.bookRef = bc.id
+         JOIN books b ON bc.bookRef = b.id
+         WHERE bb.borrower = ? AND b.format = 'physical'"
+        );
+        $getUserBorrowedBooks->bind_param("i", $_COOKIE["student"]);
+    } else if ($filter === 'digital') {
+        $getUserBorrowedBooks = $conn->prepare(
+            "SELECT bb.bookRef, bb.borrowedOn, bb.dueDate
+         FROM borrowed_books bb
+         JOIN books_copy bc ON bb.bookRef = bc.id
+         JOIN books b ON bc.bookRef = b.id
+         WHERE bb.borrower = ? AND b.format = 'digital'"
+        );
+        $getUserBorrowedBooks->bind_param("i", $_COOKIE["student"]);
+    } else {
+        $getUserBorrowedBooks = $conn->prepare("SELECT bookRef, borrowedOn, dueDate FROM borrowed_books WHERE borrower = ?");
+        $getUserBorrowedBooks->bind_param("i", $_COOKIE["student"]);
+    }
+    $getUserBorrowedBooks->execute();
+    $borrowedBooksResult = $getUserBorrowedBooks->get_result();
+} else {
+    $getUserBorrowedBooks = $conn->prepare("SELECT bookRef, borrowedOn, dueDate FROM borrowed_books WHERE borrower = ?");
+    $getUserBorrowedBooks->bind_param("i", $_COOKIE["student"]);
+    $getUserBorrowedBooks->execute();
+    $borrowedBooksResult = $getUserBorrowedBooks->get_result();
+}
 
 $countBorrowedBooks = $conn->prepare("SELECT COUNT(*) as total FROM borrowed_books WHERE borrower = ?");
 $countBorrowedBooks->bind_param("i", $_COOKIE["student"]);
@@ -111,7 +142,8 @@ $getUserWaitListResult = $getUserWaitList->get_result();
             </div>
             <!-- User Profile Edit Form -->
             <div class="user-profile-modal-form-container" data-visible="false">
-                <form class="user-profile-modal-form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <form class="user-profile-modal-form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
+                    method="post">
                     <div class="user-profile-modal-form-1">
                         <div class="user-form">
                             <label for="fName">First Name</label>
@@ -190,7 +222,8 @@ $getUserWaitListResult = $getUserWaitList->get_result();
         <div class="dashboard-notification-container">
             <div class="dashboard-notification-title-container">
                 <h1>Notifications</h1>
-                <button onclick="toggleModal('dashboardNotificationMainContainer')"><img alt="close icon" src="../assets/close.svg"></button>
+                <button onclick="toggleModal('dashboardNotificationMainContainer')"><img alt="close icon"
+                        src="../assets/close.svg"></button>
             </div>
             <div class="dashboard-notification">
                 <?php
@@ -226,14 +259,18 @@ $getUserWaitListResult = $getUserWaitList->get_result();
             <p>search books</p>
         </div>
         <div class="user-profile">
-            <button onclick="toggleModal('dashboardNotificationMainContainer')"><img src="../assets/notifications-outline.svg" class="notifications-icon"></button>
-            <button onclick="toggleMenu()" class="user-profile-btn"><img src="../assets/person-circle.svg" class="user-profile-icon"></button>
+            <button onclick="toggleModal('dashboardNotificationMainContainer')"><img
+                    src="../assets/notifications-outline.svg" class="notifications-icon"></button>
+            <button onclick="toggleMenu()" class="user-profile-btn"><img src="../assets/person-circle.svg"
+                    class="user-profile-icon"></button>
 
             <div class="user-profile-dialogue" data-visible="false">
                 <div class="user-profile-dialogue-items">
                     <button onclick="clickProfile()"><img src="../assets/person-outline.svg"> Profile</button>
-                    <button onclick="changeTheme()"><img id="themeIcon" src="../assets/sunny-outline.svg"> Theme</button>
-                    <button onclick="enableNotification()"><img id="notificationIcon" src="../assets/notifications-off-outline.svg"> Notification</button>
+                    <button onclick="changeTheme()"><img id="themeIcon" src="../assets/sunny-outline.svg">
+                        Theme</button>
+                    <button onclick="enableNotification()"><img id="notificationIcon"
+                            src="../assets/notifications-off-outline.svg"> Notification</button>
                 </div>
                 <button onclick="window.location.href = '../utility/logout.php'">Log-out</button>
             </div>
@@ -284,8 +321,24 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                 <hr>
                 <h2 class="waitList-table-title" onclick="switchTable('waitList')">Wait-List</h2>
             </div>
-
+            
             <div class="table" data-visible="true" id="borrowTable">
+
+                <div class="table-filter-container">
+                    <form action="" method="GET" id="filter-borrowed-form">
+                        <select name="filter" onchange="this.form.submit()" class="select-style">
+                            <option value="all" <?php if ($filter === 'all')
+                                echo 'selected'; ?>>All</option>
+                            <option value="physical" <?php if ($filter === 'physical')
+                                echo 'selected'; ?>>Physical
+                            </option>
+                            <option value="digital" <?php if ($filter === 'digital')
+                                echo 'selected'; ?>>Digital
+                            </option>
+                        </select>
+                    </form>
+                </div>
+
                 <table>
                     <thead>
                         <th>Name</th>
@@ -379,12 +432,16 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                                     ?>
 
                                     <?php if (isset($row["format"]) && $row["format"] === "digital") { ?>
-                                        <tr onclick="window.location.href='http://localhost/library-management-system/web/viewer.html?file=<?php echo $pathRow["location"]; ?>'">
+                                        <tr
+                                            class="table-row-digital"
+                                            onclick="openNewTab('http://localhost/library-management-system/web/viewer.html?file=<?php echo $pathRow["location"]; ?>')">
                                             <td><?php echo htmlspecialchars($row['title']); ?></td>
                                             <td><?php echo htmlspecialchars($row['genre']); ?></td>
                                             <td><?php echo htmlspecialchars($row['type']); ?></td>
-                                            <td><?php echo htmlspecialchars(date("Y-m-d h:i:s A", strtotime($borrowData['borrowedOn']))); ?></td>
-                                            <td><?php echo htmlspecialchars(date("Y-m-d h:i:s A", strtotime($borrowData['dueDate']))); ?></td>
+                                            <td><?php echo htmlspecialchars(date("Y-m-d h:i:s A", strtotime($borrowData['borrowedOn']))); ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars(date("Y-m-d h:i:s A", strtotime($borrowData['dueDate']))); ?>
+                                            </td>
                                         </tr>
                                     <?php } else { ?>
                                         <tr>
@@ -476,7 +533,9 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                                         <td><?php echo htmlspecialchars($row["title"]) ?></td>
                                         <td><?php echo htmlspecialchars($row["genre"]) ?></td>
                                         <td><?php echo htmlspecialchars($copyData["status"]) ?></td>
-                                        <td><button class="cta-btn-secondary" onclick="waitListRemove(event, '<?php echo htmlspecialchars($waitListData['id']) ?>')">Remove</button></td>
+                                        <td><button class="cta-btn-secondary"
+                                                onclick="waitListRemove(event, '<?php echo htmlspecialchars($waitListData['id']) ?>')">Remove</button>
+                                        </td>
                                     </tr>
 
                                 <?php } catch (Exception $e) { ?>

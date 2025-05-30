@@ -94,7 +94,7 @@ if (isset($_GET['search'])) {
 
 <body>
     <header class="search-book-header">
-        <button onclick="window.location.href = './dashboard.php'" class="search-book-header-back-btn"><img src="../assets/arrow-back.svg"> Back</button>
+        <button onclick="window.location.href = './dashboard.php'" class="search-book-header-back-btn"><img src="../assets/arrow-back.svg"><span>Back</span></button>
 
         <div class="search-main-container search-book-search-bar">
             <form action="" method="GET" id="search-form">
@@ -104,13 +104,15 @@ if (isset($_GET['search'])) {
                         <option value="academic">Academic</option>
                         <option value="non-academic">Non-academic</option>
                     </select>
-                    <input
-                        type="search"
-                        name="search"
-                        value="<?php if (isset($_GET['search'])) {
-                                    echo $_GET['search'];
-                                } ?>" class="form-control input-style" placeholder="Search Books">
-                    <button type="submit" class="cta-btn-primary">Search</button>
+                    <div class="search-input-btn-container">
+                        <input
+                            type="search"
+                            name="search"
+                            value="<?php if (isset($_GET['search'])) {
+                                        echo $_GET['search'];
+                                    } ?>" class="form-control input-style" placeholder="Search Books">
+                        <button type="submit" class="cta-btn-primary">Search</button>
+                    </div>
                 </div>
             </form>
             <p class="search-no-result"><?php echo $noResult ?></p>
@@ -159,7 +161,9 @@ if (isset($_GET['search'])) {
             <?php } ?>
         </div>
 
-        <aside class="search-book-sidebar-form">
+        <div class="search-book-sidebar-form-backdrop"  data-visible="false" id="searchBookSidebarFormBackdrop" onclick="showBookSideFormOnMobile()"></div>
+
+        <aside class="search-book-sidebar-form" data-visible="false" id="searchBookSidebarForm">
             <form action="./request.php" method="post">
                 <input type="hidden" name="bookId" id="bookId" readonly>
                 <h1 class="search-book-sidebar-title" id="bookTitle"></h1>

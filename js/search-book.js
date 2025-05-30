@@ -43,6 +43,8 @@ function onClickBook(id, title, author, type, genre, description, available, tot
     bookAvailable.innerText = available;
     bookTotal.innerText = total;
     bookFormat.innerText = formatType;
+
+    showBookSideFormOnMobile();
 }
 
 function waitList(event, userId) {
@@ -61,4 +63,18 @@ function waitList(event, userId) {
         location.reload();
     })
     .catch(error => console.error(error));
+}
+
+function showBookSideFormOnMobile() {
+    const sidebarForm = document.getElementById("searchBookSidebarForm");
+    const sidebarFormVisibility = sidebarForm.getAttribute("data-visible");
+    const formBackdrop = document.getElementById("searchBookSidebarFormBackdrop");
+
+    if (sidebarFormVisibility === "false") {
+        sidebarForm.setAttribute("data-visible", "true");
+        formBackdrop.setAttribute("data-visible", "true");
+    } else {
+        sidebarForm.setAttribute("data-visible", "false");
+        formBackdrop.setAttribute("data-visible", "false");
+    }
 }
