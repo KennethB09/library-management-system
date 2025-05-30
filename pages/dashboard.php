@@ -101,121 +101,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
 
 <body>
 
-    <div class="user-profile-modal-container" data-visible="false">
-        <div class="user-profile-modal">
-            <div class="user-profile-modal-title-container">
-                <h1>Your Profile</h1>
-                <img src="../assets/close.svg" class="user-profile-modal-close-icon" onclick="clickProfile()">
-            </div>
-            <div class="user-profile-modal-info-container" data-visible="true">
-                <img src="../assets/pencil.svg" class="user-profile-modal-edit-icon" onclick="editProfile()">
-                <div class="user-profile-modal-info">
-                    <div class="user-profile-modal-info-1">
-                        <div class="user-info">
-                            <h1>First Name</h1>
-                            <p><?php echo $userInfoRow["firstName"] ?></p>
-                        </div>
-                        <div class="user-info">
-                            <h1>Last Name</h1>
-                            <p><?php echo $userInfoRow["lastName"] ?></p>
-                        </div>
-                        <div class="user-info">
-                            <h1>Section</h1>
-                            <p><?php echo $userInfoRow["section"] ?></p>
-                        </div>
-                    </div>
-                    <div class="user-profile-modal-info-2">
-                        <div class="user-info">
-                            <h1>Course</h1>
-                            <p><?php echo $userInfoRow["course"] ?></p>
-                        </div>
-                        <div class="user-info">
-                            <h1>Student Number</h1>
-                            <p><?php echo $userInfoRow["studentNumber"] ?></p>
-                        </div>
-                    </div>
-                    <div class="user-profile-modal-info-3">
-                        <h1>Email</h1>
-                        <p><?php echo $userInfoRow["email"] ?></p>
-                    </div>
-                </div>
-            </div>
-            <!-- User Profile Edit Form -->
-            <div class="user-profile-modal-form-container" data-visible="false">
-                <form class="user-profile-modal-form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
-                    method="post">
-                    <div class="user-profile-modal-form-1">
-                        <div class="user-form">
-                            <label for="fName">First Name</label>
-                            <input name="fName" value="<?php echo $userInfoRow["firstName"] ?>">
-                        </div>
-                        <div class="user-form">
-                            <label for="lName">Last Name</label>
-                            <input name="lName" value="<?php echo $userInfoRow["lastName"] ?>">
-                        </div>
-                        <div class="user-form">
-                            <label for="section">Section</label>
-                            <input name="section" value="<?php echo $userInfoRow["section"] ?>">
-                        </div>
-                    </div>
-                    <div class="user-profile-modal-form-2">
-                        <label for="cp">Change Password</label>
-                        <input name="cp" placeholder="Type your new password" minlength="8">
-                    </div>
-                    <div class="user-profile-modal-form-btn">
-                        <button class="ghost-btn" type="button" onclick="editProfile()">Cancel</button>
-                        <button class="cta-btn-primary" name="user-profile-update" type="submit">Save</button>
-                    </div>
-                </form>
-
-                <?php
-
-                if (isset($_POST["user-profile-update"])) {
-
-                    $firstName = $_POST["fName"];
-                    $lastName = $_POST["lName"];
-                    $section = $_POST["section"];
-                    $newPass = $_POST["cp"];
-                    $userId = $userInfoRow["id"];
-
-                    try {
-                        require_once "../utility/dp-connection.php";
-
-                        if (empty($_POST["cp"])) {
-
-                            $updateProfile = $conn->prepare("UPDATE users SET firstName = ?, lastName = ?, section = ? WHERE id = ?");
-
-                            if (!$updateProfile) {
-                                throw new Exception("Prepare failed: " . $conn->error);
-                            }
-
-                            $updateProfile->bind_param("ssss", $firstName, $lastName, $section, $userId);
-                            $updateProfile->execute();
-                        } else {
-
-                            $updateProfile = $conn->prepare("UPDATE users SET firstName = ?, lastName = ?, section = ?, password = ? WHERE id = ?");
-
-                            if (!$updateProfile) {
-                                throw new Exception("Prepare failed: " . $conn->error);
-                            }
-
-                            $hashedPassword = password_hash($newPass, PASSWORD_DEFAULT);
-
-                            $updateProfile->bind_param("sssss", $firstName, $lastName, $section, $hashedPassword, $userId);
-                            $updateProfile->execute();
-                        }
-
-                        $updateProfile->close();
-                    } catch (Exception $e) {
-                        echo "Error: " . $e->getMessage();
-                    }
-                }
-
-                ?>
-
-            </div>
-        </div>
-    </div>
+    
 
     <!-- NOTIFICATION PANEL -->
     <div class="dashboard-notification-main-container" id="dashboardNotificationMainContainer" data-visible="false">
@@ -276,6 +162,122 @@ $getUserWaitListResult = $getUserWaitList->get_result();
             </div>
         </div>
     </header>
+
+    <div class="user-profile-modal-container" data-visible="false">
+        <div class="user-profile-modal">
+            <div class="user-profile-modal-title-container">
+                <h1>Your Profile</h1>
+                <img src="../assets/close.svg" class="user-profile-modal-close-icon" onclick="clickProfile()">
+            </div>
+            <div class="user-profile-modal-info-container" data-visible="true">
+                <img src="../assets/pencil.svg" class="user-profile-modal-edit-icon" onclick="editProfile()">
+                <div class="user-profile-modal-info">
+                    <div class="user-profile-modal-info-1">
+                        <div class="user-info">
+                            <h1>First Name</h1>
+                            <p><?php echo $userInfoRow["firstName"] ?></p>
+                        </div>
+                        <div class="user-info">
+                            <h1>Last Name</h1>
+                            <p><?php echo $userInfoRow["lastName"] ?></p>
+                        </div>
+                        <div class="user-info">
+                            <h1>Section</h1>
+                            <p><?php echo $userInfoRow["section"] ?></p>
+                        </div>
+                    </div>
+                    <div class="user-profile-modal-info-2">
+                        <div class="user-info">
+                            <h1>Course</h1>
+                            <p><?php echo $userInfoRow["course"] ?></p>
+                        </div>
+                        <div class="user-info">
+                            <h1>Student Number</h1>
+                            <p><?php echo $userInfoRow["studentNumber"] ?></p>
+                        </div>
+                    </div>
+                    <div class="user-profile-modal-info-3">
+                        <h1>Email</h1>
+                        <p><?php echo $userInfoRow["email"] ?></p>
+                    </div>
+                </div>
+            </div>
+            <!-- User Profile Edit Form -->
+            <div class="user-profile-modal-form-container" data-visible="false">
+                <form class="user-profile-modal-form" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
+                    method="post">
+                    <div class="user-profile-modal-form-1">
+                        <div class="user-form">
+                            <label for="fName">First Name</label>
+                            <input name="fName" value="<?php echo $userInfoRow["firstName"] ?>" id="fName">
+                        </div>
+                        <div class="user-form">
+                            <label for="lName">Last Name</label>
+                            <input name="lName" value="<?php echo $userInfoRow["lastName"] ?>" id="lName">
+                        </div>
+                        <div class="user-form">
+                            <label for="section">Section</label>
+                            <input name="section" value="<?php echo $userInfoRow["section"] ?>" id="section">
+                        </div>
+                    </div>
+                    <div class="user-profile-modal-form-2">
+                        <label for="cp">Change Password</label>
+                        <input name="cp" placeholder="Type your new password" minlength="8" id="cp">
+                    </div>
+                    <div class="user-profile-modal-form-btn">
+                        <button class="ghost-btn" type="button" onclick="editProfile()">Cancel</button>
+                        <button class="cta-btn-primary" name="user-profile-update" type="submit">Save</button>
+                    </div>
+                </form>
+
+                <?php
+
+                if (isset($_POST["user-profile-update"])) {
+
+                    $firstName = $_POST["fName"];
+                    $lastName = $_POST["lName"];
+                    $section = $_POST["section"];
+                    $newPass = $_POST["cp"];
+                    $userId = $userInfoRow["id"];
+
+                    try {
+                        require_once "../utility/dp-connection.php";
+
+                        if (empty($_POST["cp"])) {
+
+                            $updateProfile = $conn->prepare("UPDATE users SET firstName = ?, lastName = ?, section = ? WHERE id = ?");
+
+                            if (!$updateProfile) {
+                                throw new Exception("Prepare failed: " . $conn->error);
+                            }
+
+                            $updateProfile->bind_param("ssss", $firstName, $lastName, $section, $userId);
+                            $updateProfile->execute();
+                        } else {
+
+                            $updateProfile = $conn->prepare("UPDATE users SET firstName = ?, lastName = ?, section = ?, password = ? WHERE id = ?");
+
+                            if (!$updateProfile) {
+                                throw new Exception("Prepare failed: " . $conn->error);
+                            }
+
+                            $hashedPassword = password_hash($newPass, PASSWORD_DEFAULT);
+
+                            $updateProfile->bind_param("sssss", $firstName, $lastName, $section, $hashedPassword, $userId);
+                            $updateProfile->execute();
+                        }
+
+                        $updateProfile->close();
+                    } catch (Exception $e) {
+                        echo "Error: " . $e->getMessage();
+                    }
+                }
+
+                ?>
+
+            </div>
+        </div>
+    </div>
 
     <main>
 
