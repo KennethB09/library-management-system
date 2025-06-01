@@ -31,10 +31,6 @@ $error_form = "";
                 try {
                     require "../utility/dp-connection.php";
 
-                    if ($conn->connect_error) {
-                        throw new Exception("Connection failed: " . $conn->connect_error);
-                    }
-
                     if (isset($_POST["studentNumber"]) && strlen((string)$_POST["studentNumber"]) !== 10) {
                         throw new Exception("Student Number length should be 10.");
                     }
@@ -97,7 +93,7 @@ $error_form = "";
 
                 <button type="submit">Login</button>
             </form>
-            <p>Already have an account? <a href="signup.php">Sign-up</a></p>
+            <p>Don't have an account? <a href="signup.php">Sign-up</a></p>
         </div>
 
         <a class="role" href="admin-login.php">Admin</a>

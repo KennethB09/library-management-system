@@ -1,9 +1,9 @@
 <?php 
 
-$server = "localhost";
-$dbUsername = "lms_admin";
-$dbPassword = "admin12345";
-$dbname = "lms_db";
+$server = "sql301.infinityfree.com";
+$dbUsername = "if0_39118372";
+$dbPassword = "VSG0WMGwBV";
+$dbname = "if0_39118372_lms_db";
 
 $conn = new mysqli($server, $dbUsername, $dbPassword, $dbname);
 

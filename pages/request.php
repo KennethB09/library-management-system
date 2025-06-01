@@ -6,16 +6,6 @@ require "../utility/dp-connection.php";
 // Process form submission FIRST (before any HTML)
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["returnDate"])) {
     try {
-        $server = "localhost";
-        $username = "lms_admin";
-        $password = "admin12345";
-        $dbname = "lms_db";
-
-        $conn = new mysqli($server, $username, $password, $dbname);
-
-        if ($conn->connect_error) {
-            throw new Exception("Connection failed: " . $conn->connect_error);
-        }
 
         $requestBookStmt = $conn->prepare("INSERT INTO request_books (bookRef, requesterId, dueDate) VALUES (?, ?, ?)");
 

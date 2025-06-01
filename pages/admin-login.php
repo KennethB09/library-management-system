@@ -27,10 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     try {
         require "../utility/dp-connection.php";
 
-        if ($conn->connect_error) {
-            throw new Exception("Connection failed: " . $conn->connect_error);
-        }
-
         $stmt = $conn->prepare("SELECT id, firstName, lastName, email, password FROM admin WHERE firstName = ? AND lastName = ?");
         $stmt->bind_param("ss", $_POST["firstName"], $_POST["lastName"]);
         $stmt->execute();

@@ -4,15 +4,6 @@ checkAuth();
 
 require "../utility/dp-connection.php";
 
-function tableDataR($bookData, $requestedOn)
-{
-    echo '<tr>';
-    echo '<td>' . $bookData["title"] . '</td>';
-    echo '<td>' . $bookData["genre"] . '</td>';
-    echo '<td>' . $requestedOn . '</td>';
-    echo '</tr>';
-}
-
 $getUserInfo = $conn->prepare("SELECT id, studentNumber, firstName, lastName, section, email, course, password, credential FROM users WHERE studentNumber =?");
 $getUserInfo->bind_param("i", $_COOKIE["student"]);
 $getUserInfo->execute();
@@ -436,7 +427,7 @@ $getUserWaitListResult = $getUserWaitList->get_result();
                                     <?php if (isset($row["format"]) && $row["format"] === "digital") { ?>
                                         <tr
                                             class="table-row-digital"
-                                            onclick="openNewTab('http://localhost/library-management-system/web/viewer.html?file=<?php echo $pathRow["location"]; ?>')">
+                                            onclick="openNewTab('https://modern-library-system.kesug.com/web/viewer.html?file=<?php echo $pathRow["location"]; ?>')">
                                             <td><?php echo htmlspecialchars($row['title']); ?></td>
                                             <td><?php echo htmlspecialchars($row['genre']); ?></td>
                                             <td><?php echo htmlspecialchars($row['type']); ?></td>

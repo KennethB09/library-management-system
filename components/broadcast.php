@@ -30,16 +30,7 @@
                 
                 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["sendToAll"])) {
                     try {
-                        $server = "localhost";
-                        $username = "lms_admin";
-                        $password = "admin12345";
-                        $dbname = "lms_db";
-
-                        $conn = new mysqli($server, $username, $password, $dbname);
-
-                        if ($conn->connect_error) {
-                            throw new Exception("Connection failed: " . $conn->connect_error);
-                        }
+                        require "../utility/dp-connection.php";
 
                         // Fetch all users with credentials
                         $findUserStmt = $conn->prepare("SELECT studentNumber, credential FROM users WHERE TRIM(credential) != ''");
