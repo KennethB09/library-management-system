@@ -335,10 +335,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_POST["format"]
         );
 
+        $uploadDir = "../uploads/";
+        $uploadFile = $uploadDir . basename($_FILES['ebook']['name']);
+
         if (isset($_POST['format']) && $_POST['format'] !== "physical") {
 
-            $uploadDir = "../uploads/";
-            $uploadFile = $uploadDir . basename($_FILES['ebook']['name']);
 
             if (move_uploaded_file($_FILES['ebook']['tmp_name'], $uploadFile)) {
 
@@ -386,9 +387,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $bookId = $insertBookStmt->insert_id;
 
                 $insertBookStmt->close();
-
-                $uploadDir = "../uploads/";
-                $uploadFile = $uploadDir . basename($_FILES['file']['name']);
 
                 if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
                     $uploadStmt = $conn->prepare("INSERT INTO uploads (bookRef, location, fileName) VALUES (?, ?, ?)");

@@ -61,11 +61,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <h1>Admin Login</h1>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <div class="input-container">
-                    <label for="firstName">Admin Name</label>
+                    <label for="firstName">Admin First Name</label>
                     <input type="text" id="firstName" name="firstName" required autocomplete="off">
                 </div>
                 <div class="input-container">
-                    <label for="lastName">Admin Surname</label>
+                    <label for="lastName">Admin Last Name</label>
                     <input type="text" id="lastName" name="lastName" required autocomplete="off">
                 </div>
                 <?php if ($error_admin_name !== "") { ?>

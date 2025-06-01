@@ -9,15 +9,104 @@
 </head>
 
 <body>
+
     <div class="sign-up-main-container">
         <div class="sign-up-form-container">
             <h1>Student<br>Sign-up Form</h1>
+
+            <?php
+
+            $error_studentNum = "";
+            $error_form = "";
+            $error_studentEmail = "";
+
+            if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+                try {
+                    require "../utility/dp-connection.php";
+
+                    $checkStmt = $conn->prepare("SELECT studentNumber FROM users WHERE studentNumber = ?");
+
+                    if (!$checkStmt) {
+                        throw new Exception("Prepare failed: " . $conn->error);
+                    }
+
+                    $checkStmt->bind_param("s", $_POST["studentNumber"]);
+                    $checkStmt->execute();
+                    $checkStmt->store_result();
+
+                    if ($checkStmt->num_rows() > 0) {
+
+                        $error_studentNum = "Student number is already used.";
+                        $checkStmt->close();
+                    } else {
+
+                        $checkEmailStmt = $conn->prepare("SELECT email FROM users WHERE email = ?");
+
+                        if (!$checkEmailStmt) {
+                            throw new Exception("Prepare failed: " . $conn->error);
+                        }
+
+                        $checkEmailStmt->bind_param("s", $_POST["email"]);
+                        $checkEmailStmt->execute();
+                        $checkEmailStmt->store_result();
+
+                        if ($checkEmailStmt->num_rows() > 0) {
+
+                            $error_studentEmail = "Email is already used.";
+                            $checkEmailStmt->close();
+                        } else {
+
+                            $stmt = $conn->prepare("INSERT INTO users (studentNumber, firstName, lastName, password, email, course, section) VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+                            if (!$stmt) {
+                                throw new Exception("Prepare failed: " . $conn->error);
+                            }
+
+                            // Hash the password before storing
+                            $hashedPassword = password_hash($_POST["password"], PASSWORD_DEFAULT);
+
+                            $stmt->bind_param(
+                                "sssssss",
+                                $_POST["studentNumber"],
+                                $_POST["firstName"],
+                                $_POST["lastName"],
+                                $hashedPassword,
+                                $_POST["email"],
+                                $_POST["course"],
+                                $_POST["section"]
+                            );
+
+                            if ($stmt->execute()) {
+
+                                setcookie("student", $_POST["studentNumber"], time() + (86400 * 30), "/");
+
+                                // Redirect to dashboard
+                                header("Location: dashboard.php");
+                                exit();
+                            } else {
+                                throw new Exception("Error executing statement: " . $stmt->error);
+                            }
+
+                            $stmt->close();
+                            $conn->close();
+                        }
+                    }
+                } catch (Exception $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+            }
+            ?>
+
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 
                 <div class="input-container">
                     <label for="studentNumber">Student Number</label>
                     <input type="number" id="studentNumber" name="studentNumber" pattern="[0-9]{10}"
                         maxlength="10" minlength="10" required>
+                    <?php if ($error_studentNum !== "") { ?>
+                        <span class="form-error"><?php echo htmlspecialchars($error_studentNum); ?></span>
+                    <?php } ?>
                 </div>
 
                 <div class="input-container">
@@ -33,6 +122,9 @@
                 <div class="input-container">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required>
+                    <?php if ($error_studentEmail !== "") { ?>
+                        <span class="form-error"><?php echo htmlspecialchars($error_studentEmail); ?></span>
+                    <?php } ?>
                 </div>
 
                 <div class="sign-up-form-course-section-container">
@@ -69,51 +161,6 @@
 
         <a class="role" href="admin-login.php">Admin</a>
     </div>
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-        try {
-            require "../utility/dp-connection.php";
-
-            $stmt = $conn->prepare("INSERT INTO users (studentNumber, firstName, lastName, password, email, course, section) VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-            if (!$stmt) {
-                throw new Exception("Prepare failed: " . $conn->error);
-            }
-
-            // Hash the password before storing
-            $hashedPassword = password_hash($_POST["password"], PASSWORD_DEFAULT);
-
-            $stmt->bind_param(
-                "sssssss",
-                $_POST["studentNumber"],
-                $_POST["firstName"],
-                $_POST["lastName"],
-                $hashedPassword,
-                $_POST["email"],
-                $_POST["course"],
-                $_POST["section"]
-            );
-
-            if ($stmt->execute()) {
-
-                setcookie("student", $_POST["studentNumber"], time() + (86400 * 30), "/");
-
-                // Redirect to dashboard
-                header("Location: dashboard.php");
-                exit();
-                
-            } else {
-                throw new Exception("Error executing statement: " . $stmt->error);
-            }
-
-            $stmt->close();
-            $conn->close();
-        } catch (Exception $e) {
-            echo "Error: " . $e->getMessage();
-        }
-    }
-    ?>
 </body>
 
 </html>

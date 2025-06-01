@@ -1,0 +1,8 @@
+AddType application/javascript .js
+AddType application/javascript .mjs
+AddType text/javascript .js
+
+# For PDF.js specifically
+<FilesMatch "\.(js|mjs)$">
+    Header set Content-Type "application/javascript"
+</FilesMatch>
