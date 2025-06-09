@@ -33,7 +33,7 @@
                         require "../utility/dp-connection.php";
 
                         // Fetch all users with credentials
-                        $findUserStmt = $conn->prepare("SELECT studentNumber, credential FROM users WHERE TRIM(credential) != ''");
+                        $findUserStmt = $conn->prepare("SELECT studentNumber, credential FROM users WHERE credential IS NOT NULL AND TRIM(credential) != ''");
                         $findUserStmt->execute();
                         $result = $findUserStmt->get_result();
 
@@ -89,16 +89,7 @@
                 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["sendToUser"])) {
 
                     try {
-                        $server = "localhost";
-                        $username = "lms_admin";
-                        $password = "admin12345";
-                        $dbname = "lms_db";
-
-                        $conn = new mysqli($server, $username, $password, $dbname);
-
-                        if ($conn->connect_error) {
-                            throw new Exception("Connection failed: " . $conn->connect_error);
-                        }
+                        require "../utility/dp-connection.php";
 
                         $findUserStmt = $conn->prepare("SELECT credential FROM users WHERE studentNumber = ?");
                         $findUserStmt->bind_param("i", $_POST["studentNum"]);

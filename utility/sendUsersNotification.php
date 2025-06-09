@@ -1,5 +1,6 @@
 <?php
 require_once("../vendor/autoload.php");
+require "../utility/dp-connection.php";
 
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
@@ -44,7 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 );
 
                 // Store notification in the database
-                $conn = new mysqli("localhost", "lms_admin", "admin12345", "lms_db");
                 $storeNotifications = $conn->prepare("INSERT INTO notifications (studentNumber, title, content) VALUES (?, ?, ?)");
                 $storeNotifications->bind_param(
                     "sss",
