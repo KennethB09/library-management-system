@@ -21,8 +21,8 @@
             <div class="broadcast-form-1" data-visible="true">
 
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                    <input class="input-style" name="title" placeholder="Title of Notification">
-                    <input class="input-style" name="body" placeholder="Body of Notification">
+                    <input class="input-style" name="title" placeholder="Title of Notification" required>
+                    <input class="input-style" name="body" placeholder="Body of Notification" required>
                     <button class="cta-btn-primary" name="sendToAll" type="submit">Broadcast</button>
                 </form>
 
@@ -78,9 +78,9 @@
             <div class="broadcast-form-2" data-visible="false">
 
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                    <input class="input-style" name="studentNum" type="number" placeholder="Student Number of Student">
-                    <input class="input-style" name="title" placeholder="Title of Notification">
-                    <input class="input-style" name="body" placeholder="Body of Notification">
+                    <input class="input-style" name="studentNum" type="number" placeholder="Student Number of Student" required>
+                    <input class="input-style" name="title" placeholder="Title of Notification" required>
+                    <input class="input-style" name="body" placeholder="Body of Notification" required>
                     <button class="cta-btn-primary" name="sendToUser" type="submit">Send</button>
                 </form>
 
