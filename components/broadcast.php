@@ -97,7 +97,7 @@
                         $result = $findUserStmt->get_result()->fetch_assoc();
 
                         $credential = isset($result["credential"]) ? $result["credential"] : null;
-                        if ($credential == null) {
+                        if ($credential == null || trim($credential) == "") {
                             echo "<script>alert('Student is not Subscribe to Notification')</script>";
                             throw new Exception("Student " . $_POST["studentNum"] . "is not Subscribe to Notification");
                         }
